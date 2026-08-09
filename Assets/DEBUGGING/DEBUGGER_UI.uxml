@@ -1,0 +1,5 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; position: absolute;">
+        <ui:Label text="State&#10;" name="state-label" style="font-size: 36px; width: auto; height: auto; -unity-font-style: bold-and-italic;"/>
+    </ui:VisualElement>
+</ui:UXML>
