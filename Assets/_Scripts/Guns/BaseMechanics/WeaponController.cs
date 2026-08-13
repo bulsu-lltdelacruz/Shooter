@@ -13,7 +13,8 @@ public class WeaponController : MonoBehaviour
     [SerializeField] Transform firePoint;      // muzzle - used for projectile spawn / muzzle flash position
     [SerializeField] Camera aimCamera;         // raycast origin/direction comes from here, assign your player camera
     [SerializeField] Transform fireOrigin;
-    [SerializeField] LineRenderer lineRenderer;
+    //[SerializeField] LineRenderer lineRenderer;
+    [SerializeField] GameObject handGunLineRender;
 
     [Header("Events (wire these to animation, UI, camera recoil, etc.)")]
     public UnityEvent OnFire;
@@ -32,8 +33,7 @@ public class WeaponController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         currentAmmo = data.magazineSize;
         reserveAmmo = data.reserveAmmo;
-        lineRenderer.positionCount = 2;
-        lineRenderer.enabled = false;
+        
     }
 
     void Start()
@@ -124,17 +124,17 @@ public class WeaponController : MonoBehaviour
         for (int i = 0; i < data.pelletsPerShot; i++)
         {
             Vector3 direction = ApplySpread(aimCamera.transform.forward, data.bulletSpread);
-
+            Vector3 rawOrigin = ApplyStartSpread(data.bulletStartSpread);
             if (data.projectilePrefab != null)
-                FireProjectile(direction);
+                FireProjectile(rawOrigin, direction);
             else
-                FireHitscan(direction);
+                FireHitscan(rawOrigin, direction);
         }
     }
 
-    void FireHitscan(Vector3 direction)
+    void FireHitscan(Vector3 rawOrigin, Vector3 direction)
     {
-        Vector3 origin = aimCamera.transform.position;
+        Vector3 origin = rawOrigin + aimCamera.transform.position;
         Vector3 endPoint = origin + (direction * 99999);
         if (Physics.Raycast(origin, direction, out RaycastHit hit, 99999))
         {
@@ -148,20 +148,17 @@ public class WeaponController : MonoBehaviour
             }
             endPoint = hit.point;
         }
-        lineRenderer.SetPosition(0, fireOrigin.position);
-        lineRenderer.SetPosition(1, endPoint);
-        StartCoroutine(SowBulletTrail());
-        
-
+        //lineRenderer.SetPosition(0, fireOrigin.position + rawOrigin);
+        //lineRenderer.SetPosition(1, endPoint);
+        ObjectPoolManager.SpawnLineRenderer(handGunLineRender, fireOrigin.transform.position,
+            fireOrigin.transform.rotation,
+             fireOrigin.position + rawOrigin,
+             endPoint,
+             ObjectPoolManager.PoolType.ParticleSystems);
     }
-    IEnumerator SowBulletTrail()
-    {
-        lineRenderer.enabled = true;
-        yield return new WaitForSeconds(.05f);
-        lineRenderer.enabled = false;
-    }
+    
 
-    void FireProjectile(Vector3 direction)
+    void FireProjectile(Vector2 origin, Vector3 direction)
     {
         GameObject proj = Instantiate(data.projectilePrefab, firePoint.position, Quaternion.LookRotation(direction));
 
@@ -180,7 +177,11 @@ public class WeaponController : MonoBehaviour
         Quaternion spreadRotation = Quaternion.Euler(-randomPoint.y, randomPoint.x, 0f);
         return spreadRotation * forward;
     }
-
+    Vector3 ApplyStartSpread(float spreadAmount)
+    {
+        if(spreadAmount <= 0f) return Vector3.zero;
+        return Random.insideUnitCircle * spreadAmount;
+    }
     public void Reload()
     {
         if (isReloading || currentAmmo == data.magazineSize || reserveAmmo <= 0) return;

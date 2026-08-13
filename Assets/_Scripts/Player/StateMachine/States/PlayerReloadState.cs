@@ -18,7 +18,8 @@ public class PlayerReloadState : PlayerState
     }
     public override void ExitState()
     {
-
+        gunAnimator.ResetTrigger("GunReload1");
+        armAnimator.ResetTrigger("ArmReload1");
     }
     public override void FrameUpdate()
     {

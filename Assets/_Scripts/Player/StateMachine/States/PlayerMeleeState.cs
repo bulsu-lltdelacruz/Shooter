@@ -11,11 +11,13 @@ public class PlayerMeleeState : PlayerState
         Animator gunAnimator) :
         base(player, playerStateMachine, armAnimator, gunAnimator)
     {
-        base.baseCooldown = .375f-.05f;
+        //base.baseCooldown = .375f-.05f;
+        base.baseCooldown = .375f - .1f;
     }
+    string val;
     public override void EnterState()
     {
-        string val = Random.Range(1,3).ToString();
+        val = Random.Range(1,3).ToString();
         gunAnimator.SetTrigger($"GunMelee{val}");
         armAnimator.SetTrigger($"ArmMelee{val}");
     }
@@ -23,6 +25,8 @@ public class PlayerMeleeState : PlayerState
     {
         //reset stretch, the other one is in armanimcontroller
         player.animationEventBus.armEvents.evtRevertArmMelee?.Invoke();
+        gunAnimator.ResetTrigger($"GunMelee{val}");
+        armAnimator.ResetTrigger($"ArmMelee{val}");
     }
     public override void FrameUpdate()
     {

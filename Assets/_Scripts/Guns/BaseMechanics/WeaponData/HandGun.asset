@@ -23,6 +23,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   bulletSpread: 0
+  bulletStartSpread: 0
   pelletsPerShot: 1
   magazineSize: 12
   reserveAmmo: 84

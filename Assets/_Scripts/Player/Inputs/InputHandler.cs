@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static InputActions_Player;
+using static PlayerStateController;
 public class InputHandler : IPlayerActions
 {
     Player player;
@@ -8,7 +9,6 @@ public class InputHandler : IPlayerActions
     PlayerActions playerActions;
     public Vector2 mousePosition;
     public Vector2 moveDirection;
-    public bool isJump = false;//can only be made false by PlayerMovement
     public InputHandler(Player player)
     {
         inputActions = new InputActions_Player();
@@ -42,11 +42,6 @@ public class InputHandler : IPlayerActions
         if (context.canceled)
             player.PlayerStateController.isMeleeing = false;
     }
-    public void OnCrouch(InputAction.CallbackContext context)
-    {
-        
-    }
-
     public void OnInteract(InputAction.CallbackContext context)
     {
         
@@ -56,9 +51,40 @@ public class InputHandler : IPlayerActions
     {
         if (!context.canceled && player.AllowJump())
         {
-            isJump = true;//can only be made false by PlayerMovement
+            PlayerStatus.Instance.isJumping = true;//can only be made false by PlayerMovement
+            player.playerWalkingState.ResetJump();
+            player.playerWalkingState.jumpCounter--;
         }
-            
+
+    }
+    public void OnDash(InputAction.CallbackContext context)
+    {
+        if (!context.canceled)
+        {
+            //cooldownhandler
+            //PlayerStatus.Instance.isDashing = true;
+            player.PlayerStateController.TryChangeState(E_PlayerMovementStates.DASH);
+        }
+    }
+    public void OnSlam(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            player.PlayerStateController.TryChangeState(E_PlayerMovementStates.SLAM);
+        }
+    }
+    public void OnGrapple(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if(player.PlayerStateController.GetCurrentLocoState() is LocoPlayerWalkingState)
+            {
+                if(!player.playerWalkingState.isGrappling)
+                    player.playerWalkingState.StartGrapple();
+                else
+                    player.playerWalkingState.EndGrapple();
+            }
+        }
     }
 
     public void OnLook(InputAction.CallbackContext context)
@@ -77,11 +103,6 @@ public class InputHandler : IPlayerActions
     }
 
     public void OnPrevious(InputAction.CallbackContext context)
-    {
-        
-    }
-
-    public void OnSprint(InputAction.CallbackContext context)
     {
         
     }

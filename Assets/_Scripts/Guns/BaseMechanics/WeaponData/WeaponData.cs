@@ -29,6 +29,8 @@ public class WeaponData : ScriptableObject
     [Header("Bullet Spread")]
     [Tooltip("Max cone angle (degrees) a bullet can randomly deviate from center. This is the only accuracy model - hipfire only, no ADS.")]
     public float bulletSpread = 3f;
+    [Tooltip("Area where the source can come from.")]
+    public float bulletStartSpread = 3f;
 
     [Header("Pellets")]
     [Tooltip("1 for normal guns. Set higher for shotguns - each pellet rolls its own spread and damage independently.")]

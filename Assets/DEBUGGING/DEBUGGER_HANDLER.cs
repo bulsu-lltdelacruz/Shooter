@@ -16,6 +16,7 @@ public class DEBUGGER_HANDLER : MonoBehaviour
 
     void Update()
     {
-        l_state.text = $"STATE {player.PlayerStateController.DEBUG_GET_CURRENT_STATE()}";
+        l_state.text = $"STATE {player.PlayerStateController.DEBUG_GET_CURRENT_STATE()}\n" +
+            $"{player.playerLocomotionStateMachine.currentState}";
     }
 }
