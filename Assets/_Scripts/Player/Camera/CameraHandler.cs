@@ -4,6 +4,7 @@ using UnityEngine;
 public class CameraHandler : MonoBehaviour
 {
     Camera camera;
+    public Camera gunCamera;
     Player player;
     Vector3 lookInput;
     InputHandler playerInputs;
@@ -15,6 +16,7 @@ public class CameraHandler : MonoBehaviour
     float vertical;
     [Header("bobbingTransforms")]
     [SerializeField]Transform gun;
+    [SerializeField]public GameObject gunRotateParent;
     private Vector3 gunBasePos;
     private Quaternion gunBaseRot;
     [Header("Sway")]
@@ -32,6 +34,7 @@ public class CameraHandler : MonoBehaviour
     {
         this.playerInputs = playerInputs;
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         this.playerStateMachine = playerStateMachine;
     }
 
@@ -68,6 +71,8 @@ public class CameraHandler : MonoBehaviour
     }
     private void GetInput()
     {
+        if(playerInputs.mousePosition == null)
+            Debug.LogError("lokounull");
         lookInput = playerInputs.mousePosition;
     }
     private void Sway()
@@ -94,6 +99,10 @@ public class CameraHandler : MonoBehaviour
         Quaternion targetRot = gunBaseRot * Quaternion.Euler(swayEulorRot);
         gun.localRotation = Quaternion.Slerp(gun.localRotation, targetRot, Time.deltaTime * smoothRot);
 
+    }
+    public Vector3 GetForward()
+    {
+        return camera.transform.forward;
     }
 
 

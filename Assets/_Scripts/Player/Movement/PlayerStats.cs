@@ -2,7 +2,7 @@ using System;
 using UnityEditor.UIElements;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerStats : MonoBehaviour
 {
     [Header("These are the base values")]
     Player player;
@@ -46,6 +46,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public float moveInputInfluence;
     [Header("Momentum")]
     [SerializeField] public float momentumDeceleration;
+    [SerializeField] public float weaponSwitchDuration;
+
+    //[Header("DEBUGGING")]
+    /*[SerializeField] public float init;
+    [SerializeField] public float hold;*/
 
     void Start()
     {

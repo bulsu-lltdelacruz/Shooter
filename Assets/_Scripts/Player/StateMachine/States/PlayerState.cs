@@ -9,12 +9,14 @@ public class PlayerState
     protected Animator gunAnimator;
     protected float baseCooldown = .375f;
     protected float deltaTime;
+    protected int leftArmLayerIndex;
     protected PlayerState(Player player, PlayerStateMachine playerStateMachine, Animator armAnimator, Animator gunAnimator)
     {
         this.player = player;
         this.playerStateMachine = playerStateMachine;
         this.armAnimator = armAnimator;
         this.gunAnimator = gunAnimator;
+        leftArmLayerIndex = armAnimator.GetLayerIndex("Left Arm");
     }
     public virtual void EnterState()
     {

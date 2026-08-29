@@ -25,7 +25,7 @@ public class LocoPlayerWalkingState : PlayerState
 
     LayerMask groundLayer;
 
-
+    public bool allowMovement;
 
     #region grappling
     public bool isGrappling;
@@ -38,8 +38,8 @@ public class LocoPlayerWalkingState : PlayerState
     LayerMask grappleMask;
 
     private float grappleSpeed;
-    float grappleRange = 5000;
-    bool didHitGrapplePoint = false;
+    float grappleRange = 100;
+    public bool didHitGrapplePoint = false;
     float momentumDeceleration;
     float movementMultiplier;
     float moveInputInfluence;
@@ -54,6 +54,10 @@ public class LocoPlayerWalkingState : PlayerState
 
     private bool hasTouchedGroundAfterTouchingWall;
     private Vector3 velocity;
+    public Vector3 currentVelocity;
+
+    //int leftArmLayerIndex = 0;
+
     public LocoPlayerWalkingState(
         Player player,
         PlayerStateMachine playerStateMachine,
@@ -62,31 +66,33 @@ public class LocoPlayerWalkingState : PlayerState
         Animator gunAnimator) :
         base(player, playerStateMachine, armAnimator, gunAnimator)
     {
+        allowMovement = true;
         this.playerInputs = playerInputs;
-        moveSpeed = player.playerMovement.moveSpeed;
-        horizontalSpeedMultiplier = player.playerMovement.horizontalSpeedMultiplier;
-        sprintMultiplier = player.playerMovement.sprintMultiplier; 
+        moveSpeed = player.playerStats.moveSpeed;
+        horizontalSpeedMultiplier = player.playerStats.horizontalSpeedMultiplier;
+        sprintMultiplier = player.playerStats.sprintMultiplier;
+        currentVelocity = Vector3.zero;
         //gravity
-        gravityAcceleration = player.playerMovement.gravityAcceleration;
-        maxGravityAmount = player.playerMovement.maxGravityAmount;
+        gravityAcceleration = player.playerStats.gravityAcceleration;
+        maxGravityAmount = player.playerStats.maxGravityAmount;
         //jump
-        maxJumpHeight = player.playerMovement.maxJumpHeight;
-        initialJumpForce = player.playerMovement.initialJumpForce;
-        minJumpForce = player.playerMovement.minJumpForce;//when reaching max height
-        jumpCurve = player.playerMovement.jumpCurve;
+        maxJumpHeight = player.playerStats.maxJumpHeight;
+        initialJumpForce = player.playerStats.initialJumpForce;
+        minJumpForce = player.playerStats.minJumpForce;//when reaching max height
+        jumpCurve = player.playerStats.jumpCurve;
 
         jumpCounter = PlayerStatus.Instance.maxJumps;
         groundLayer = LayerMask.GetMask("Ground");
 
-        grappleSpeed = player.playerMovement.grappleSpeed;
-        grappleStart = player.playerMovement.grappleStart.transform;
-        grappleLine = player.playerMovement.grappleLineObj.GetComponent<LineRenderer>();
-        pullStrength = player.playerMovement.pullStrength;
-        momentumDeceleration = player.playerMovement.momentumDeceleration;
-        movementMultiplier = player.playerMovement.movementMultiplier;
-        moveInputInfluence = player.playerMovement.moveInputInfluence;
+        grappleSpeed = player.playerStats.grappleSpeed;
+        grappleStart = player.playerStats.grappleStart.transform;
+        grappleLine = player.playerStats.grappleLineObj.GetComponent<LineRenderer>();
+        pullStrength = player.playerStats.pullStrength;
+        momentumDeceleration = player.playerStats.momentumDeceleration;
+        movementMultiplier = player.playerStats.movementMultiplier;
+        moveInputInfluence = player.playerStats.moveInputInfluence;
         waitBeforeMomentumLoss = new WaitForSeconds(secondsBeforeMomentumLoss);
-
+        //leftArmLayerIndex = armAnimator.GetLayerIndex("Left Arm");
     }
     public override void EnterState()
     {
@@ -98,6 +104,10 @@ public class LocoPlayerWalkingState : PlayerState
     }
     public override void FrameUpdate()
     {
+        if (!allowMovement)
+        {
+            return;
+        }
         jumpDir = Vector3.up;
         if (PlayerStatus.Instance.isGrounded)
         {
@@ -123,6 +133,10 @@ public class LocoPlayerWalkingState : PlayerState
         _Jump();
         _DrawGrappleLine();
         _ApplyMovement();
+        Vector3 toPoint = grapplePoint - grappleStart.position;
+        Vector3 directionNormalized = toPoint.normalized;
+        grappleLine.SetPosition(0, grappleStart.position);
+        grappleLine.SetPosition(1, grappleStart.position + directionNormalized * deltaGrapplePos);
         // Debug.Log(velocity.magnitude);
     }
     
@@ -136,32 +150,39 @@ public class LocoPlayerWalkingState : PlayerState
     }
     private void _DebuggingPurpose()
     {
-        moveSpeed = player.playerMovement.moveSpeed;
-        horizontalSpeedMultiplier = player.playerMovement.horizontalSpeedMultiplier;
-        sprintMultiplier = player.playerMovement.sprintMultiplier;
+        moveSpeed = player.playerStats.moveSpeed;
+        horizontalSpeedMultiplier = player.playerStats.horizontalSpeedMultiplier;
+        sprintMultiplier = player.playerStats.sprintMultiplier;
         //gravity
-        gravityAcceleration = player.playerMovement.gravityAcceleration;
-        maxGravityAmount = player.playerMovement.maxGravityAmount;
+        gravityAcceleration = player.playerStats.gravityAcceleration;
+        maxGravityAmount = player.playerStats.maxGravityAmount;
         //jump
-        maxJumpHeight = player.playerMovement.maxJumpHeight;
-        initialJumpForce = player.playerMovement.initialJumpForce;
-        minJumpForce = player.playerMovement.minJumpForce;//when reaching max height
+        maxJumpHeight = player.playerStats.maxJumpHeight;
+        initialJumpForce = player.playerStats.initialJumpForce;
+        minJumpForce = player.playerStats.minJumpForce;//when reaching max height
 
-        grappleSpeed = player.playerMovement.grappleSpeed;
-        grappleStart = player.playerMovement.grappleStart.transform;
-        grappleLine = player.playerMovement.grappleLineObj.GetComponent<LineRenderer>();
-        pullStrength = player.playerMovement.pullStrength;
-        momentumDeceleration = player.playerMovement.momentumDeceleration;
-        movementMultiplier = player.playerMovement.movementMultiplier;
-        moveInputInfluence = player.playerMovement.moveInputInfluence;
+        grappleSpeed = player.playerStats.grappleSpeed;
+        grappleStart = player.playerStats.grappleStart.transform;
+        grappleLine = player.playerStats.grappleLineObj.GetComponent<LineRenderer>();
+        pullStrength = player.playerStats.pullStrength;
+        momentumDeceleration = player.playerStats.momentumDeceleration;
+        movementMultiplier = player.playerStats.movementMultiplier;
+        moveInputInfluence = player.playerStats.moveInputInfluence;
 
         aimCamera = Camera.main;
         grappleMask = LayerMask.GetMask("Ground", "Wall");
         grappleLine.positionCount = 2;
     }
+
+    private float initialGrappleDistance;
+    private bool isInitialGrappleThrow;
     public void StartGrapple()
     {
+        armAnimator.SetLayerWeight(leftArmLayerIndex, 1f);
+        armAnimator.SetBool("L_ArmGrappleStart", true);
         isGrappling = true;
+        if(!didHitGrapplePoint)
+            isInitialGrappleThrow = true;
         Vector3 endPoint;
         if (Physics.Raycast(aimCamera.transform.position, aimCamera.transform.forward, out RaycastHit hit, grappleRange, grappleMask))
         {
@@ -177,13 +198,13 @@ public class LocoPlayerWalkingState : PlayerState
         }
 
         grapplePoint = endPoint;
+        initialGrappleDistance = Vector3.Distance(grappleStart.position, grapplePoint);
 
         deltaGrapplePos = 0f; // reset so each new grapple starts from zero length
 
         grappleLine.SetPosition(0, grappleStart.position);
         grappleLine.SetPosition(1, grappleStart.position);
     }
-
     private void _DrawGrappleLine()
     {
         if (!isGrappling)
@@ -194,10 +215,7 @@ public class LocoPlayerWalkingState : PlayerState
         Vector3 directionNormalized = toPoint.normalized;
 
         deltaGrapplePos += grappleSpeed * Time.deltaTime;
-        deltaGrapplePos = Mathf.Min(deltaGrapplePos, maxDistance);
-
-        grappleLine.SetPosition(0, grappleStart.position);
-        grappleLine.SetPosition(1, grappleStart.position + directionNormalized * deltaGrapplePos);
+        deltaGrapplePos = Mathf.Clamp(deltaGrapplePos, 0, maxDistance);
 
         if (!grappleLine.enabled)
             grappleLine.enabled = true;
@@ -208,27 +226,37 @@ public class LocoPlayerWalkingState : PlayerState
             Vector3 finalVel = (velocity.normalized + directionNormalized) * (pullStrength * Time.deltaTime);
             //Debug.Log($"_DrawGrappleLine(): Velocity before : {velocity.normalized}, Normalized:{directionNormalized}, Velocity after : {finalVel}");
             velocity = finalVel;
-           // Debug.Log(velocity.magnitude);
+            // Debug.Log(velocity.magnitude);
+            armAnimator.SetBool("L_ArmGrappleEnd", true);
+            armAnimator.SetBool("L_ArmGrappleStart", false);
             if ((player.transform.position - grapplePoint).sqrMagnitude < 4)
             {
-                EndGrapple();
+                EndGrapple(true);
             }
         }
         else if (!didHitGrapplePoint && deltaGrapplePos >= maxDistance)
         {
-            EndGrapple();
+            armAnimator.SetBool("L_ArmGrappleStart", false);
+            EndGrapple(false);
         }
     }
 
 
-    public void EndGrapple()
+    public void EndGrapple(bool isPreserveMomentum)
     {
         isGrappling = false;
+        isInitialGrappleThrow = false;
         deltaGrapplePos = 0f;
         grappleLine.enabled = false; // hide the rope once released — drop this if handled elsewhere
-        preserveMomentum = true;//tama yan
+        if(isPreserveMomentum)
+            preserveMomentum = true;//tama yan
+        else
+            preserveMomentum = false;
         initialMomentum = velocity.magnitude;
-        deltaGravityAmount = 0;
+        if (isPreserveMomentum)
+            deltaGravityAmount = 0;
+        armAnimator.SetLayerWeight(leftArmLayerIndex, 0f);
+        armAnimator.SetBool("L_ArmGrappleEnd", false);
     }
     private void _Move()
     {
@@ -272,32 +300,23 @@ public class LocoPlayerWalkingState : PlayerState
             velocity.y = velY;
         }
         //_Dash(horizontalVelocity.normalized);
-        player.playerDashingState.SetDirection(velocity.normalized);
+        Vector3 dashDir = new Vector3 (velocity.x, 0, velocity.z);
+        player.playerDashingState.SetDirection(dashDir.normalized);
     }
     
     private void _Gravity()
     {
         Quaternion slopeOffset = Quaternion.identity;
-       
-        
         
         if (PlayerStatus.Instance.isJumping)
             return;
         if (preserveMomentum)
         {
             return;
-            if (velocity.y <= 0)//if almost falling, start increaseing gravity
-            {
-
-            }
-            else //else dont add gravity yet
-            {
-                return;
-            }
         }
         if (deltaGravityAmount + gravityAcceleration * Time.deltaTime < maxGravityAmount)
             deltaGravityAmount += gravityAcceleration * Time.deltaTime;
-        if (isGrappling)
+        if (isGrappling && !isInitialGrappleThrow)
             deltaGravityAmount /= 5;// if grappling, reduce influence of gravity
         
             
@@ -354,6 +373,7 @@ public class LocoPlayerWalkingState : PlayerState
         }
 
         player.characterController.Move(slopeOffset * moveDir * speed);
+        currentVelocity = velocity;
     }
     private void _Jump()
     {

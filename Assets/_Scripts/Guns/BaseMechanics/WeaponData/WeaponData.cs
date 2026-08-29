@@ -6,12 +6,21 @@ public enum FireMode
     Burst,
     Auto
 }
+public enum WeaponType
+{
+    None,
+    Handgun,
+    Shotgun
+}
 [CreateAssetMenu(fileName = "New Weapon", menuName = "ScriptableObjects/Weapons/Weapon Data")]
 public class WeaponData : ScriptableObject
 {
     [Header("Identity")]
     public string weaponName = "Pistol";
-
+    [Header("Weapon Type")]
+    public WeaponType weaponType;
+    [Header("Icon")]
+    public Texture2D icon;
     [Header("Fire Mode")]
     public FireMode fireMode = FireMode.Single;
     [Tooltip("Shots per second. Governs cooldown between shots in every fire mode.")]
@@ -23,6 +32,7 @@ public class WeaponData : ScriptableObject
 
     [Header("Damage & Range")]
     public float damagePerPellet = 20f;
+    public float pushForce = 0f;
     public float range = 100f;
     public LayerMask hitMask = ~0;
 
@@ -34,7 +44,7 @@ public class WeaponData : ScriptableObject
 
     [Header("Pellets")]
     [Tooltip("1 for normal guns. Set higher for shotguns - each pellet rolls its own spread and damage independently.")]
-    [Min(1)] public int pelletsPerShot = 1;
+    [Min(1)] public int pelletsPerShot;
 
     [Header("Ammo")]
     public int magazineSize = 12;

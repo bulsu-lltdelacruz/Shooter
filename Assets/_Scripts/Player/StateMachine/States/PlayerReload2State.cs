@@ -13,11 +13,13 @@ public class PlayerReload2State : PlayerState
     }
     public override void EnterState()
     {
+        gunAnimator = player.gunAnimator;
         gunAnimator.SetTrigger("GunReload2");
         armAnimator.SetTrigger("ArmReload2");
     }
     public override void ExitState()
     {
+        gunAnimator = player.gunAnimator;
         gunAnimator.ResetTrigger("GunReload2");
         armAnimator.ResetTrigger("ArmReload2");
     }

@@ -14,8 +14,8 @@ public class LocoPlayerDashingState : PlayerState
         Animator gunAnimator) :
         base(player, playerStateMachine, armAnimator, gunAnimator)
     {
-        dashSpeed = player.playerMovement.dashSpeed;
-        maxDashDistance = player.playerMovement.maxDashDistance;
+        dashSpeed = player.playerStats.dashSpeed;
+        maxDashDistance = player.playerStats.maxDashDistance;
         forward = player.transform.forward;
     }
     public override void EnterState()

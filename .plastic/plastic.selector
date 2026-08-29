@@ -1,4 +1,3 @@
 repository "Shooter/Shooter@20067308731751@cloud"
   path "/"
-    br "/main"
-    co "/main"
+    smartbranch "/main"

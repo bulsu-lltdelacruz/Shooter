@@ -13,13 +13,16 @@ public class PlayerShootingState : PlayerState
     }
     public override void EnterState()
     {
-        gunAnimator.SetTrigger("GunFire");
-        armAnimator.SetTrigger("ArmFire");
+        gunAnimator = player.gunAnimator;
+        gunAnimator.SetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_shootTrigger);
+        armAnimator.SetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.ARM_shootTrigger);
+        //gunAnimator.SetTrigger("GunFire");
+        //armAnimator.SetTrigger("ArmFire");
         player.weaponController.TryFirePressed();
     }
     public override void ExitState()
     {
-
+        gunAnimator = player.gunAnimator;
     }
     public override void FrameUpdate()
     {

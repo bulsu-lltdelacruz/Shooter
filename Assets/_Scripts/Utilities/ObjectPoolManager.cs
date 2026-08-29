@@ -151,23 +151,45 @@ public class ObjectPoolManager : MonoBehaviour
     {
         return SpawnObject<GameObject>(objectToSpawn, spawnPos, spawnRotation, poolType);
     }
+    public static GameObject SpawnBulletTrail(GameObject objectToSpawn, Vector3 spawnPos, Quaternion spawnRotation, Vector3 origin, Vector3 endPoint, PoolType poolType = PoolType.GameObjects)
+    {
+        //spawn the pooled object first, then get the LineRenderer from the instance
+        BulletTrailHelper obj = SpawnObject<BulletTrailHelper>(objectToSpawn, spawnPos, spawnRotation, poolType);
+        obj.SetFinalPos(endPoint);
+        if (obj == null) return null;
+        //LineRenderer line = obj.GetComponent<LineRenderer>();
+        /*if (line == null)
+        {
+            Debug.LogError("LineRenderer Component not found on pooled instance");
+            return obj;
+        }*/
+        /*line.startWidth = 0.08f;
+        line.endWidth = 0.08f;
+        line.positionCount = 2;
+        line.SetPosition(0, origin);
+        line.SetPosition(1, endPoint);
+        line.enabled = true;*/
+
+        return obj.gameObject;
+    }
     public static GameObject SpawnLineRenderer(GameObject objectToSpawn, Vector3 spawnPos, Quaternion spawnRotation, Vector3 origin, Vector3 endPoint, PoolType poolType = PoolType.GameObjects)
     {
         //spawn the pooled object first, then get the LineRenderer from the instance
-        GameObject obj = SpawnObject<GameObject>(objectToSpawn, spawnPos, spawnRotation, poolType);
-        if (obj == null) return null;
 
+        GameObject obj = SpawnObject<GameObject>(objectToSpawn, spawnPos, spawnRotation, poolType);
         LineRenderer line = obj.GetComponent<LineRenderer>();
         if (line == null)
         {
             Debug.LogError("LineRenderer Component not found on pooled instance");
             return obj;
         }
-
+        line.startWidth = 0.08f;
+        line.endWidth = 0.08f;
         line.positionCount = 2;
         line.SetPosition(0, origin);
         line.SetPosition(1, endPoint);
         line.enabled = true;
+
         return obj;
     }
     public static void ReturnObjectToPool(GameObject obj, PoolType poolType = PoolType.GameObjects)

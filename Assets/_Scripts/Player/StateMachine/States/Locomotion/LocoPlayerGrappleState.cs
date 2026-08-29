@@ -23,9 +23,9 @@ public class LocoPlayerGrappleState : PlayerState
         Animator gunAnimator) :
         base(player, playerStateMachine, armAnimator, gunAnimator)
     {
-        grappleSpeed = player.playerMovement.grappleSpeed;
-        grappleStart = player.playerMovement.grappleStart.transform;
-        grappleLine = player.playerMovement.grappleLineObj.GetComponent<LineRenderer>();
+        grappleSpeed = player.playerStats.grappleSpeed;
+        grappleStart = player.playerStats.grappleStart.transform;
+        grappleLine = player.playerStats.grappleLineObj.GetComponent<LineRenderer>();
         aimCamera = Camera.main;
         grappleMask = LayerMask.GetMask("Ground","Wall");
         grappleLine.positionCount = 2;

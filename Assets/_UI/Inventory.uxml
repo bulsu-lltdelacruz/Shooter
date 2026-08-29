@@ -1,0 +1,29 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_UI/inventory.uss?fileID=7433441132597879392&amp;guid=a08879f53aab43b41bcc34be49d92179&amp;type=3#inventory"/>
+    <ui:VisualElement name="inventory-parent" style="flex-grow: 1; flex-direction: column; width: 1030px; height: 568px; min-height: 568px; max-height: 568px; min-width: 1030px; max-width: 1030px;">
+        <ui:VisualElement name="head" style="flex-grow: 1; height: 12px; min-height: 12%; max-height: 12px; background-color: rgb(26, 26, 26); border-bottom-width: 4px; border-bottom-color: rgb(207, 207, 207); align-items: center;">
+            <ui:VisualElement name="section-left" class="left"/>
+            <ui:Label text="Weapons" name="section-label" enabled="true" class="equipped-interact-label" style="color: rgb(207, 207, 207); font-size: 17px;"/>
+            <ui:VisualElement name="section-right" class="right" style="flex-grow: 1; background-position-x: center;"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="content" style="flex-grow: 1; flex-direction: row;">
+            <ui:VisualElement name="left-container" class="background-base" style="flex-grow: 1; min-height: auto; max-height: none; height: auto; min-width: 22%; max-width: 22%; flex-direction: column;">
+                <ui:VisualElement name="vs-equipped" style="flex-grow: 1; min-width: auto; max-width: none; background-color: rgba(55, 29, 29, 0);">
+                    <ui:VisualElement name="slot" class="equipped-slot">
+                        <ui:VisualElement name="icon" class="equipped-icon">
+                            <ui:VisualElement class="left"/>
+                            <ui:VisualElement class="right" style="flex-grow: 1;"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="button" class="equipped-interact">
+                            <ui:Label text="UNEQUIP" name="text" enabled="true" class="equipped-interact-label" style="color: rgb(207, 207, 207);"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="right-container" class="background-base" style="flex-grow: 1; border-left-width: 14px; border-left-color: rgb(207, 207, 207); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0);">
+                <ui:VisualElement name="vs-details" style="flex-grow: 1; min-height: 75%; max-height: 75px; border-bottom-width: 9px; border-bottom-color: rgb(207, 207, 207); background-color: rgba(231, 49, 49, 0);"/>
+                <ui:VisualElement name="vs-available" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

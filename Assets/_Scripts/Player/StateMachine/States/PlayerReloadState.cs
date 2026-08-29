@@ -13,13 +13,19 @@ public class PlayerReloadState : PlayerState
     }
     public override void EnterState()
     {
-        gunAnimator.SetTrigger("GunReload1");
-        armAnimator.SetTrigger("ArmReload1");
+        gunAnimator = player.gunAnimator;
+        gunAnimator.SetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_reloadTrigger);
+        armAnimator.SetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.ARM_reloadTrigger);
+        //gunAnimator.SetTrigger("GunReload1");
+        //armAnimator.SetTrigger("ArmReload1");
     }
     public override void ExitState()
     {
-        gunAnimator.ResetTrigger("GunReload1");
-        armAnimator.ResetTrigger("ArmReload1");
+        gunAnimator = player.gunAnimator;
+        gunAnimator.ResetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_reloadTrigger);
+        armAnimator.ResetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.ARM_reloadTrigger);
+        //gunAnimator.ResetTrigger("GunReload1");
+        //armAnimator.ResetTrigger("ArmReload1");
     }
     public override void FrameUpdate()
     {

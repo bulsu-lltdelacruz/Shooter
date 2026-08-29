@@ -14,10 +14,10 @@ public class LocoPlayerSlammingState : PlayerState
         Animator gunAnimator) :
         base(player, playerStateMachine, armAnimator, gunAnimator)
     {
-        slamSpeed = player.playerMovement.slamSpeed;
-        maxSlamSpeed = player.playerMovement.maxSlamSpeed;
-        slamAcceleration = player.playerMovement.slamAcceleration;
-        slamCollider = player.playerMovement.slamColliderObject;
+        slamSpeed = player.playerStats.slamSpeed;
+        maxSlamSpeed = player.playerStats.maxSlamSpeed;
+        slamAcceleration = player.playerStats.slamAcceleration;
+        slamCollider = player.playerStats.slamColliderObject;
     }
     public override void EnterState()
     {
@@ -25,14 +25,14 @@ public class LocoPlayerSlammingState : PlayerState
     }
     public override void ExitState()
     {
-        slamSpeed = player.playerMovement.slamSpeed;
+        slamSpeed = player.playerStats.slamSpeed;
         deltaAccel = 0;
     }
     public override void FrameUpdate()
     {
-        slamSpeed = player.playerMovement.slamSpeed;
-        slamAcceleration = player.playerMovement.slamAcceleration;
-        maxSlamSpeed = player.playerMovement.maxSlamSpeed;//remove both, just ford ebug
+        slamSpeed = player.playerStats.slamSpeed;
+        slamAcceleration = player.playerStats.slamAcceleration;
+        maxSlamSpeed = player.playerStats.maxSlamSpeed;//remove both, just ford ebug
         //add collider bigger, and other logic heere when i apply the cool shit
         deltaAccel += (deltaAccel+slamSpeed < maxSlamSpeed) ? deltaAccel * slamAcceleration * Time.deltaTime + 1f : 0;
         player.characterController.Move(-Vector3.up*(slamSpeed+ deltaAccel)* Time.deltaTime);

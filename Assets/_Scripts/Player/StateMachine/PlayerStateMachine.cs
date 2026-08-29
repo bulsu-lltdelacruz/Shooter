@@ -18,7 +18,7 @@ public class PlayerStateMachine
         if (newState == null)
             return;
         previousState = currentState;
-
+        //UnityEngine.Debug.Log($"exit :  {currentState}");
         currentState?.ExitState();
         currentState = newState;
         currentState?.EnterState();
