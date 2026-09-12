@@ -57,6 +57,7 @@ public class Player : Entity
 
     private void Awake()
     {
+        EntityManager.Instance.RegisterPlayer(gameObject, GetComponent<IDamageable>());
         playerInputs = new InputHandler(this);
         uiInputs = new(this, playerInputs.GetInputActions());
         playerInventory = GetComponent<PlayerInventory>();
@@ -146,7 +147,10 @@ public class Player : Entity
     {
         
     }
-
+    public override void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
+    {
+        //Debug.Log("Damaged with " + amount +" ugh ouchies");
+    }
     /*public void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
     {
         throw new NotImplementedException();

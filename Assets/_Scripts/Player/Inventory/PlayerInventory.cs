@@ -38,7 +38,7 @@ public class PlayerInventory : MonoBehaviour
     }
     private System.Collections.IEnumerator SetupWorldSpaceUI()
     {
-        while (inventoryDocument == null || inventoryDocument.rootVisualElement == null)
+        while (inventoryDocument == null || inventoryDocument.rootVisualElement == null || UIHandler.Instance == null)
         {
             //Debug.Log("SDFDF");
             yield return null;
@@ -73,7 +73,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void PopulateSlot()
     {
-        if (inventory == null)
+        if (inventory == null || equippedSlots == null)
         {
             Debug.Log("null");
             return;

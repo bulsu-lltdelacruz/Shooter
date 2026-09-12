@@ -15,7 +15,7 @@ public class WeaponController : MonoBehaviour
     [SerializeField] public WeaponData data;
     [SerializeField] Transform firePoint;      // muzzle - used for projectile spawn / muzzle flash position
     [SerializeField] Camera aimCamera;         // raycast origin/direction comes from here, assign your player camera
-    [SerializeField] public Transform[] fireOrigin;
+    [SerializeField] public Transform fireOrigin;
     //[SerializeField] LineRenderer lineRenderer;
     [SerializeField] GameObject handGunLineRender;
     [SerializeField] private LayerMask gunMask;
@@ -33,6 +33,7 @@ public class WeaponController : MonoBehaviour
     AudioSource audioSource;
 
     private int damageableLayer;
+    private int projectileLayer;
 
     //ewawawa
     Vector2[] spiralPointsCache;
@@ -43,6 +44,7 @@ public class WeaponController : MonoBehaviour
         currentAmmo = data.magazineSize;
         reserveAmmo = data.reserveAmmo;
         damageableLayer = LayerMask.NameToLayer("Damageable");
+        projectileLayer = LayerMask.NameToLayer("ProjectileDamageable");
     }
 
     void Start()
@@ -128,17 +130,17 @@ public class WeaponController : MonoBehaviour
         else
 
         {
-            int barelCount = fireOrigin.Length;
+            /*int barelCount = fireOrigin.Length;
             for (int i = 0; i < barelCount; i++)
-            {
+            {*/
                 ObjectPoolManager.SpawnBulletTrail(handGunLineRender, rawOrigin,
-                fireOrigin[i].rotation,
+                fireOrigin.rotation,
                 rawOrigin,
                 target.transform.position,
                 ObjectPoolManager.PoolType.ParticleSystems);
                 if (EntityManager.Instance.GetDamageableFromEnemy(target, out IDamageable damageable))
                     damageable.TakeDamage(data.damagePerPellet, target.transform.position, target.transform.position);
-            }
+           // }
             
         }
     }
@@ -152,50 +154,75 @@ public class WeaponController : MonoBehaviour
         if (data.muzzleFlashPrefab)
             Instantiate(data.muzzleFlashPrefab, firePoint.position, firePoint.rotation);
 
-        int barelCount = fireOrigin.Length;
-        int totalPellets = data.pelletsPerShot / barelCount;
+        //int barelCount = fireOrigin.Length;
+        int pelletsPerShot = data.pelletsPerShot;
+        IDamageable damageable = null;
 
-        for (int i = 0; i < totalPellets; i++)
+        for (int i = 0; i < pelletsPerShot; i++)
         {
-            Vector3 direction = ApplySpread(aimCamera.transform.forward, data.bulletSpread, i, totalPellets);
-            Vector3 rawOrigin = ApplyStartSpread(data.bulletStartSpread, i, totalPellets);
+            Vector3 direction = ApplySpread(aimCamera.transform.forward, data.bulletSpread, i, pelletsPerShot);
+            Vector3 rawOrigin = ApplyStartSpread(data.bulletStartSpread, i, pelletsPerShot);
             if (data.projectilePrefab != null)
                 FireProjectile(rawOrigin, direction, false);
             else
-                FireHitscan(rawOrigin, direction, false);
+            {
+                IDamageable damageableTemp = FireHitscan(rawOrigin, direction, false, i);
+                damageable = (damageableTemp != null) ? damageableTemp : damageable;
+            }
+                
         }
+        if(damageable != null)
+            damageable.TakeDamageWithImpact(transform.position);
+
     }
 
-    void FireHitscan(Vector3 rawOrigin, Vector3 direction, bool isFromOtherSource)
+    IDamageable FireHitscan(Vector3 rawOrigin, Vector3 direction, bool isFromOtherSource, int pelletIndex)
     {
+        IDamageable damageableReturn = null;
         Vector3 origin = rawOrigin + aimCamera.transform.position;
         if (isFromOtherSource)
             origin = rawOrigin;
-        int barelCount = fireOrigin.Length;
-        for (int i = 0; i < barelCount; i++)
-        {
+        //int barelCount = fireOrigin.Length;
+       /* for (int i = 0; i < barelCount; i++)
+        {*/
             Vector3 endPoint = origin + (direction * 999);
             if (Physics.Raycast(origin, direction, out RaycastHit hit, 999,gunMask))
             {
-                if (hit.transform.gameObject.layer == damageableLayer)
+                if (hit.transform.gameObject.CompareTag("Enemy"))
                 {
                     if (data.impactEffectPrefab)
                         Instantiate(data.impactEffectPrefab, hit.point, Quaternion.LookRotation(hit.normal));
 
                     if (EntityManager.Instance.GetDamageableFromEnemy(hit.collider.gameObject, out IDamageable damageable))
-                        damageable.TakeDamageWithImpact(data.damagePerPellet, data.pushForce, transform.position);
+                    {
+                        damageable.AddForceAndDamageAmount(data.damagePerPellet, data.pushForce);
+                        damageableReturn = damageable;
+                    }
+                    
                 }
-                endPoint = hit.point;
+                else if (hit.transform.gameObject.CompareTag("Projectile"))
+                {
+                
+                    if (EntityManager.Instance.GetDamageableFromProjectile(hit.collider.gameObject, out IDamageable projDamageable))
+                    {
+                        projDamageable.TakeDamage(0, transform.position, transform.position);
+                        damageableReturn = projDamageable;
+                    }
+                    damageableReturn = projDamageable;
+                }
+
+            endPoint = hit.point;
             }
-            Vector3 firOriginfrfr = fireOrigin[i].position+rawOrigin;
+            Vector3 firOriginfrfr = fireOrigin.position+rawOrigin;
             if (isFromOtherSource)
                 firOriginfrfr = rawOrigin;
             ObjectPoolManager.SpawnBulletTrail(handGunLineRender, firOriginfrfr,
-                fireOrigin[i].rotation,
-                 fireOrigin[i].position,
+                fireOrigin.rotation,
+                 fireOrigin.position,
                  endPoint,
                  ObjectPoolManager.PoolType.ParticleSystems);
-        }
+        // }
+        return damageableReturn;
     }
     
 
@@ -219,10 +246,20 @@ public class WeaponController : MonoBehaviour
         const float goldenAngle = 137.5077f;
         for (int i = 0; i < totalPellets; i++)
         {
-            float radiusT = totalPellets > 1 ? Mathf.Sqrt((float)i / (totalPellets - 1)) : 0f; // i=0 -> center
+            float radiusT = totalPellets > 1 ? Mathf.Sqrt((float)i / (totalPellets - 1)) : 0f;
             float thetaRad = i * goldenAngle * Mathf.Deg2Rad;
             spiralPointsCache[i] = new Vector2(Mathf.Cos(thetaRad), Mathf.Sin(thetaRad)) * radiusT;
         }
+
+        // Raw spiral centroid isn't (0,0) for most pellet counts -> visible bias to one side.
+        Vector2 centroid = Vector2.zero;
+        for (int i = 0; i < totalPellets; i++)
+            centroid += spiralPointsCache[i];
+        centroid /= totalPellets;
+
+        for (int i = 0; i < totalPellets; i++)
+            spiralPointsCache[i] -= centroid;
+
         cachedPelletCount = totalPellets;
     }
 

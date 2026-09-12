@@ -53,4 +53,19 @@ public class SplitterGrenade : BaseGrenade, IDamageable
         OnDestroyBase();
         hasBeenHit = false;
     }
+
+    public void TakeDamageWithImpact(Vector3 source)
+    {
+
+    }
+
+    public void AddForceAndDamageAmount(float damage, float forceAmount)
+    {
+
+    }
+
+    public void AddForce(Vector3 direction, float forceAmount)
+    {
+
+    }
 }

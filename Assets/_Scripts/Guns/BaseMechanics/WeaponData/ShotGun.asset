@@ -20,7 +20,7 @@ MonoBehaviour:
   burstCount: 3
   burstShotDelay: 0.08
   damagePerPellet: 20
-  pushForce: 20
+  pushForce: 1
   range: 100
   hitMask:
     serializedVersion: 2

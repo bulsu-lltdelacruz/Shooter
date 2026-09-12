@@ -7,6 +7,7 @@ public class Entity : MonoBehaviour, IDamageable
     private float forceDecelDecel = 1f;
     private Vector3 forceDir;
     private float forceAmount = 0;
+    private float totalPelletDamage;
     public virtual void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
     {
         Debug.Log("Damaged with ");
@@ -19,6 +20,22 @@ public class Entity : MonoBehaviour, IDamageable
         Vector3 direction = transform.position - source;
         direction.y = 0;
         AddForce(direction, impactAmount);
+    }
+    public virtual void TakeDamageWithImpact(Vector3 source)
+    {
+        /*Vector3 forceDirection = transform.position - source;
+        forceDirection.Normalize();
+        forceDirection *= impactAmount;*/
+        Debug.Log(totalPelletDamage);
+        totalPelletDamage = 0;
+        Vector3 direction = transform.position - source;
+        direction.y = 0;
+        AddForce(direction, forceAmount);
+    }
+    public virtual void AddForceAndDamageAmount(float damage, float forceAmount)
+    {
+        this.forceAmount += forceAmount;
+        this.totalPelletDamage += damage;
     }
     public virtual void AddForce(Vector3 direction, float forceAmount)
     {

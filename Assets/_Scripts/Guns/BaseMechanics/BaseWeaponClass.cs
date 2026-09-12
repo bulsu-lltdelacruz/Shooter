@@ -4,7 +4,7 @@ public class BaseWeaponClass : MonoBehaviour
 {
     //public GameObject prefab;
     public WeaponData data;
-    public Transform[] fireOrigin;
+    public Transform fireOrigin;
     public Texture2D icon;
     public string GUN_idleTrigger;
     public string GUN_shootTrigger;

@@ -72,7 +72,7 @@ public class PlayerDashMeleeState : PlayerState
         float stopDistance = 2f; //
         if (distance <= stopDistance)
         {
-            GameObject impactPrefab = PlayerPrefabs.Instance.GetImpactPrefab();
+            GameObject impactPrefab = Prefabs.Instance.GetImpactPrefab();
             exitFlag = true;
             armAnimator.SetBool("IsArmMeleeStart", false);
             armAnimator.SetTrigger("ArmMelee1");
