@@ -32,6 +32,8 @@ public class PlayerDashMeleeState : PlayerState
         player.playerInventory.HideWeaponGameobject(true);
         exitFlag = false;
         player.PlayerStateController.allowAltFireCharging = false;
+        player.meleeCollider.gameObject.SetActive(true);
+        player.meleeCollider.targetEnemy = target;
     }
     public override void ExitState()
     {
@@ -43,6 +45,8 @@ public class PlayerDashMeleeState : PlayerState
         exitFlag = false;
         deltaTime = 0f;
         RemoveLockedOnTarget();
+        player.meleeCollider.gameObject.SetActive(false);
+        player.meleeCollider.targetEnemy = null;
     }
     public override void FrameUpdate()
     {
@@ -59,17 +63,25 @@ public class PlayerDashMeleeState : PlayerState
             return;
         }
 
-        Vector3 rawDirection =(targetTransform.position+(-playerTransform.forward * 1.2f)) - playerTransform.position;
-        float distance = rawDirection.magnitude;
-
-        playerTransform.position = Vector3.MoveTowards(
-            playerTransform.position,
-            targetTransform.position,
-            dashSpeed * Time.deltaTime
-        );
-
-
-        float stopDistance = 2f; //
+        /* Vector3 rawDirection = (targetTransform.position + (-playerTransform.forward * 1.2f)) - playerTransform.position;
+         if (player.meleeCollider.isTargetInRange)
+         {
+             GameObject impactPrefab = Prefabs.Instance.GetImpactPrefab();
+             exitFlag = true;
+             armAnimator.SetBool("IsArmMeleeStart", false);
+             armAnimator.SetTrigger("ArmMelee1");
+             ObjectPoolManager.SpawnObject(impactPrefab, playerTransform.position, playerTransform.rotation, ObjectPoolManager.PoolType.GameObjects);
+             return;
+             // target.
+         }
+         playerTransform.position = Vector3.MoveTowards(
+             playerTransform.position,
+             targetTransform.position,
+             dashSpeed * Time.deltaTime
+         );*/
+        Vector3 toTarget = targetTransform.position - playerTransform.position;
+        float distance = toTarget.magnitude;
+        float stopDistance = 1.32f; // melee range from the enemy's center
         if (distance <= stopDistance)
         {
             GameObject impactPrefab = Prefabs.Instance.GetImpactPrefab();
@@ -77,8 +89,35 @@ public class PlayerDashMeleeState : PlayerState
             armAnimator.SetBool("IsArmMeleeStart", false);
             armAnimator.SetTrigger("ArmMelee1");
             ObjectPoolManager.SpawnObject(impactPrefab, playerTransform.position, playerTransform.rotation, ObjectPoolManager.PoolType.GameObjects);
-            // target.
+            return;
         }
+
+        // Stop point sits on the line between you and the enemy, so it's always reachable
+        Vector3 stopPoint = targetTransform.position - toTarget.normalized * stopDistance;
+
+        playerTransform.position = Vector3.MoveTowards(
+            playerTransform.position,
+            stopPoint,
+            dashSpeed * Time.deltaTime
+        );
+        /*     Vector3 rawDirection =(targetTransform.position+(-playerTransform.forward * 1.2f)) - playerTransform.position;
+             float distance = rawDirection.magnitude;
+             float stopDistance = .5f; //
+             if (distance <= stopDistance)
+             {
+                 GameObject impactPrefab = Prefabs.Instance.GetImpactPrefab();
+                 exitFlag = true;
+                 armAnimator.SetBool("IsArmMeleeStart", false);
+                 armAnimator.SetTrigger("ArmMelee1");
+                 ObjectPoolManager.SpawnObject(impactPrefab, playerTransform.position, playerTransform.rotation, ObjectPoolManager.PoolType.GameObjects);
+                 return;
+                 // target.
+             }
+             playerTransform.position = Vector3.MoveTowards(
+                 playerTransform.position,
+                 targetTransform.position,
+                 dashSpeed * Time.deltaTime
+             );*/
 
     }
     /*IEnumerator ExitAfterTime()

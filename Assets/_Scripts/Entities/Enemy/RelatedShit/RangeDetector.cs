@@ -14,8 +14,7 @@ public class RangeDetector : MonoBehaviour
             player = other.gameObject;
         }if(other.CompareTag("Wall"))
         {
-            enemy.StopAttack();
-            Debug.Log("NOO");
+           // enemy.StopAttack();
         }
     }
     private void OnTriggerExit(Collider other)

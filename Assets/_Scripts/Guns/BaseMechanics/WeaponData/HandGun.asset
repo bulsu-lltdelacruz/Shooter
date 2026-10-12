@@ -14,12 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   weaponName: Pistol
   weaponType: 1
+  damageType: 1
   icon: {fileID: 4584671053970592468, guid: 1c02df6dba34f74419d2698b8c45458e, type: 3}
   fireMode: 0
   fireRate: 6
   burstCount: 3
   burstShotDelay: 0.08
   damagePerPellet: 20
+  poiseDamagePerPellet: 5
+  pushForce: 0
   range: 100
   hitMask:
     serializedVersion: 2

@@ -59,17 +59,17 @@ public class BeamHelper : MonoBehaviour, IDamageable
         ObjectPoolManager.ReturnObjectToPool(gameObject);
     }
 
-    public void TakeDamageWithImpact(float amount, float impactAmount, Vector3 source)
+    public void TakeDamageWithImpact(float amount, float impactAmount, Vector3 source, DamageType damageType)
     {
 
     }
 
-    public void TakeDamageWithImpact(Vector3 source)
+    public void TakeDamageWithImpact(Vector3 source, DamageType damageType)
     {
 
     }
 
-    public void AddForceAndDamageAmount(float damage, float forceAmount)
+    public void AddForceAndDamageAmount(float damage, float forceAmount, float poiseDamage)
     {
 
     }

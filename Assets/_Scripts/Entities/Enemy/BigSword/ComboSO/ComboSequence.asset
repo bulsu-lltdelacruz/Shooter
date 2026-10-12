@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7061287abdccf5445ae60869743544a9, type: 3}
+  m_Name: ComboSequence
+  m_EditorClassIdentifier: Assembly-CSharp::ComboSequenceSO
+  steps:
+  - name: Thurst
+    animTrigger: AttackSeq1
+    startupTime: 0.01
+    activeTime: 0.42
+    recoveryTime: 0.1
+    chainWindow: 0.1
+    damage: 0
+    dashAmount: 1
+    attackCooldown: 0.65
+    probability: 0.3
+  - name: UpSlash
+    animTrigger: AttackSeq2
+    startupTime: 0.01
+    activeTime: 0.3
+    recoveryTime: 0
+    chainWindow: 0
+    damage: 0
+    dashAmount: 1
+    attackCooldown: 1
+    probability: 0.25
+  - name: Slash2
+    animTrigger: AttackSeq4
+    startupTime: 0.01
+    activeTime: 0.8
+    recoveryTime: 0.1
+    chainWindow: 0.1
+    damage: 0
+    dashAmount: 1
+    attackCooldown: 1
+    probability: 0.3
+  - name: Full
+    animTrigger: AttackSeq5
+    startupTime: 0.01
+    activeTime: 1.2
+    recoveryTime: 0.1
+    chainWindow: 0.1
+    damage: 0
+    dashAmount: 1
+    attackCooldown: 2
+    probability: 0.15
+  comboTree:
+  - currentSequence: 0
+    availableSequence: 01000000
+  - currentSequence: 1
+    availableSequence: 02000000
+  - currentSequence: 2
+    availableSequence: ffffffff
+  - currentSequence: 3
+    availableSequence: ffffffff

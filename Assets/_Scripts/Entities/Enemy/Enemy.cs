@@ -1,10 +1,14 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
 public class Enemy : Entity
 {
+    [SerializeField] public UIDocument HPBarDoc;
+    protected VisualElement HPBar;
+    protected float HPBarWidth;
     [SerializeField] protected NavMeshAgent agent;
     [SerializeField] protected Animator animator;
     [SerializeField] protected float navDelay = .25f;
@@ -13,37 +17,69 @@ public class Enemy : Entity
     protected GameObject playerObject;
     protected Transform playerTransform;
 
-    [Header("Attack cooldowns")]
+    [SerializeField] public GameObject attackCollider;
     [SerializeField] protected float attackCooldown = .5f;
     private float deltaCooldown;
-    protected bool isAttacking = false;
+    public bool isAttacking = false;
 
     protected float deltaAttackDelay;
-    protected bool isInAttackDelay;
+    protected bool isInParryWindow;
+    public bool isStunned;
+    [SerializeField] protected float stunDuration;
+    protected float deltaStunTime;
+    EnemyComboAttackState comboAttackState;
+    protected EnemySounds sounds;
     //protected WaitForSeconds attackDelayWait;
     protected void StartBase()
     {
-        EntityManager.Instance.RegisterEnemy(gameObject);
         playerObject = EntityManager.Instance.GetPlayerObject();
         playerDamageable = EntityManager.Instance.GetPlayerDamageable();
         playerTransform = playerObject.transform;
+        currentPoise = maxPoise;
+        currentHP = maxHP;
+        HPBar = HPBarDoc.rootVisualElement.Q<VisualElement>("hp-bar");
+        HPBarWidth = HPBar.style.width.value.value;
+        sounds = GetComponentInChildren<EnemySounds>();
         //agent.updateRotation = false;
     }
+    protected void OnEnableBase()
+    {
+        Debug.Log("add");
+        EntityManager.Instance.RegisterEnemy(gameObject);
+        OnStunEvt += OnStun;
+    }
 
-    private void OnDestroy()
+    protected void OnDisableeBase()
     {
         EntityManager.Instance.UnRegisterEnemy(gameObject);
+        OnStunEvt -= OnStun;
     }
-    public virtual void Attack(E_AttackType attackType, Vector3 target)
-    {
-
-    }
-
+    
+    #region ATTACKS
     public void StartAttacking()
     {
         isAttacking = true;
         agent.enabled = false;
     }
+    public void EndAttacking()
+    {
+        isAttacking = false;
+        agent.enabled = true;
+        deltaCooldown = 0;
+    }
+    public virtual void Attack()
+    {
+        //the actyual attack logic
+    }
+    public virtual void Attack(E_AttackType attackType, Vector3 target)
+    {
+        //gets called inside rangeddetector to try attacking if possible
+    }
+    public virtual void StopAttack()
+    {
+
+    }
+    #endregion END ATTACKS
     public void FaceDirection(Vector3 targetDirection)
     {
         Vector3 faceDirection = targetDirection - transform.position;
@@ -52,33 +88,72 @@ public class Enemy : Entity
         Vector3 finalFaceDirection = new Vector3(faceDirection.x, 0, faceDirection.z);
         transform.rotation = Quaternion.LookRotation(new Vector3(finalFaceDirection.x, 0, finalFaceDirection.z));
     }
-    public void EndAttacking()
+    public virtual void IncrementCharacterMovement(float amount)
     {
-        isAttacking = false;
-        agent.enabled = true;
-        deltaCooldown = 0;
+        /*currentDashDirection = target - transform.position;
+        currentDashDirection.Normalize();
+        currentDashDirection.y = 0;
+        Vector3 faceDirection = new Vector3(currentDashDirection.x, 0, currentDashDirection.z);
+        transform.rotation = Quaternion.LookRotation(faceDirection);*/
     }
-    public bool CheckCooldownFinished()
+    public override void TakeDamageWithImpact(Vector3 source, DamageType damageType)
     {
-        return deltaCooldown >= attackCooldown;
-    }
-    public virtual void StopAttack()
-    {
+        base.TakeDamageWithImpact(source, damageType);
+        if(currentHP <=0)
+        {
+            if (isStunned && damageType.Equals(DamageType.MELEE))
+            {
+                Die(4);
+            }else
+            {
 
+                Die(1);
+            }
+            
+        }
+        float hpPercent = (currentHP/maxHP)*100;
+        HPBar.style.width = Length.Percent(hpPercent);
+        if (isInParryWindow)
+        {
+            StopAttack();
+        }
+        EndParryWindow();
+    }
+    #region EVENT RELATED
+    private void OnStun()
+    {
+        isStunned = true;
+        animator.SetBool("IsStunned", isStunned);
+        EndAttacking();
+    }
+    private void OnRemoveStun()
+    {
+        currentPoise = maxPoise;
+        isStunned = false;
+        deltaStunTime = 0;
     }
     public virtual void StartParryWindow()
     {
-        isInAttackDelay = true;
+        isInParryWindow = true;
     }
     public virtual void EndParryWindow()
     {
         deltaAttackDelay = 0f;
-        isInAttackDelay = false;
+        isInParryWindow = false;
     }
+    #endregion END EVENT RELATED
+    
+
+    #region COUNTDOWNS
     protected void FrameUpdate2()
     {
+        if (isAttacking)
+        {
+            Debug.Log("FUCKLER " + isAttacking);
+            return;
+        }
         base.FrameUpdate();
-         deltaTime += Time.deltaTime;
+        deltaTime += Time.deltaTime;
         if (deltaTime > navDelay)
         {
             if (!agent.enabled)
@@ -96,7 +171,28 @@ public class Enemy : Entity
             animator.SetBool("IsRunning", !isIdle);
 
         }
-
+        UpdateCooldown();
+    }
+    protected void CountDownStun()
+    {
+        deltaStunTime += Time.deltaTime;
+        if (stunDuration - deltaStunTime <= .25f)
+        {
+            animator.SetBool("IsStunned", false);
+            animator.SetBool("IsRunning", false);
+            animator.SetBool("IsIdle", true);
+        }
+        if (deltaStunTime >= stunDuration)
+        {
+            OnRemoveStun();
+        }
+    }
+    public bool CheckCooldownFinished()
+    {
+        return deltaCooldown >= attackCooldown;
+    }
+    protected void UpdateCooldown()
+    {
         if (!isAttacking)
         {
             if (deltaCooldown > attackCooldown)
@@ -106,10 +202,14 @@ public class Enemy : Entity
 
             deltaCooldown += Time.deltaTime;
         }
-
     }
+    #endregion END COUNTDOWNS
 }
 public enum E_AttackType
 {
-    ATTACK_1
+    ATTACK_1,
+    ATTACK_2,
+    ATTACK_3,
+    ATTACK_4,
+    ATTACK_5
 }

@@ -9,6 +9,7 @@ TagManager:
   - Wall
   - Enemy
   - Projectile
+  - PickUp
   layers:
   - Default
   - TransparentFX
@@ -24,9 +25,9 @@ TagManager:
   - Weapon
   - Player
   - ProjectileDamageable
-  - 
-  - 
-  - 
+  - UIPickingIgnore
+  - PickUp
+  - Detector
   - 
   - 
   - 

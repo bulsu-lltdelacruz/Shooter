@@ -2,11 +2,13 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using Sherbert.Framework.Generic;
+using System;
 
 public class Prefabs : MonoBehaviour
 {
     public GameObject impaactPrefab;
-    public static Prefabs Instance;
+    public GameObject bulletDropPrefab;
+    [NonSerialized]public static Prefabs Instance;
     private void Start()
     {
         if(Instance == null)

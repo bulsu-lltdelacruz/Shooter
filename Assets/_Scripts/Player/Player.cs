@@ -47,6 +47,7 @@ public class Player : Entity
     #region ATTACK RELATED STUFF
     [NonSerialized]public WeaponController weaponController; 
     [NonSerialized]public GrenadeController grenadeController;
+    [SerializeField] public MeleeHitboxDetector meleeCollider;
     #endregion
 
     #region Inventory
@@ -54,7 +55,10 @@ public class Player : Entity
     [NonSerialized]public PlayerInventory playerInventory;
     public UIHandler uiHandler;
     #endregion
-
+    #region UI DOCS
+    [SerializeField] private UIDocument HUDDoc;
+    private VisualElement HPBar;
+    #endregion
     private void Awake()
     {
         EntityManager.Instance.RegisterPlayer(gameObject, GetComponent<IDamageable>());
@@ -122,7 +126,9 @@ public class Player : Entity
         #region SET INSTANCES
         cameraHandler.SetInstances(playerInputs, playerStateMachine);
         #endregion SET INSTANCES
-
+        currentHP = maxHP;
+        //Init UI stuff
+        HPBar = HUDDoc.rootVisualElement.Q<VisualElement>("hp-bar");
     }
     private void Update()
     {
@@ -150,6 +156,23 @@ public class Player : Entity
     public override void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
     {
         //Debug.Log("Damaged with " + amount +" ugh ouchies");
+        Debug.Log("ARAY, "+amount);
+        currentHP = Mathf.Max(0, currentHP-=amount);
+        float hpPercent = (currentHP / maxHP) * 100;
+        SoundFXManager.instance.PlaySoundFXClip(PlayerSounds.Instance.hit_sound, transform, .3f, SoundType.SOUNDFX);
+        HPBar.style.width = Length.Percent(hpPercent* 0.9583f);//kasi di mas maliit sa loob 
+        if (currentHP <=0)
+        {
+            Debug.Log("Die");
+           // UnityEditor.EditorApplication.isPlaying = false;
+        }
+    }
+    public override void Heal(float healAmount)
+    {
+        currentHP = Mathf.Clamp(currentHP + healAmount, 0, maxHP);
+        Debug.Log($"{currentHP} from {healAmount} amount of healing");
+        float hpPercent = (currentHP / maxHP) * 100;
+        HPBar.style.width = Length.Percent(hpPercent* 0.9583f);//kasi di mas maliit sa loob 
     }
     /*public void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
     {

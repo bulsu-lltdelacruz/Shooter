@@ -19,6 +19,8 @@ public class WeaponData : ScriptableObject
     public string weaponName = "Pistol";
     [Header("Weapon Type")]
     public WeaponType weaponType;
+    [Header("Weapon Type")]
+    public DamageType damageType;
     [Header("Icon")]
     public Texture2D icon;
     [Header("Fire Mode")]
@@ -32,6 +34,7 @@ public class WeaponData : ScriptableObject
 
     [Header("Damage & Range")]
     public float damagePerPellet = 20f;
+    public float poiseDamagePerPellet = 5f;
     public float pushForce = 0f;
     public float range = 100f;
     public LayerMask hitMask = ~0;

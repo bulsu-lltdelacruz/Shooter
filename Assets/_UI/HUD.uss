@@ -1,0 +1,22 @@
+:root {
+}
+
+.hp-bar {
+    width: 230px;
+    max-height: 30px;
+    height: 30px;
+    min-height: auto;
+    margin-left: 0;
+    margin-bottom: 0;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-self: flex-start;
+    bottom: auto;
+    left: auto;
+    position: absolute;
+    transform-origin: center;
+    margin-top: 0;
+    margin-right: 0;
+    translate: 30px -30px;
+    scale: 1 0.7;
+}

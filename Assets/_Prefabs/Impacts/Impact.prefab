@@ -71,7 +71,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 384
   impactAmount: 10
-  damage: 1
+  damage: 20
   duration: 0.5
 --- !u!54 &7017017043400876084
 Rigidbody:

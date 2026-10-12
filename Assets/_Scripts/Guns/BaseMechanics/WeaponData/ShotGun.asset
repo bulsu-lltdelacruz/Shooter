@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   weaponName: ShotGun
   weaponType: 2
+  damageType: 2
   icon: {fileID: 3506167780502562645, guid: 1c02df6dba34f74419d2698b8c45458e, type: 3}
   fireMode: 0
   fireRate: 6
   burstCount: 3
   burstShotDelay: 0.08
-  damagePerPellet: 20
+  damagePerPellet: 5.5
+  poiseDamagePerPellet: 5
   pushForce: 1
   range: 100
   hitMask:

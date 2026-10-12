@@ -57,7 +57,8 @@ public class LocoPlayerWalkingState : PlayerState
     public Vector3 currentVelocity;
 
     //int leftArmLayerIndex = 0;
-
+    private float footstepInterval = .4f;
+    private float deltaStepInterval;
     public LocoPlayerWalkingState(
         Player player,
         PlayerStateMachine playerStateMachine,
@@ -66,6 +67,8 @@ public class LocoPlayerWalkingState : PlayerState
         Animator gunAnimator) :
         base(player, playerStateMachine, armAnimator, gunAnimator)
     {
+
+        deltaStepInterval = footstepInterval;
         allowMovement = true;
         this.playerInputs = playerInputs;
         moveSpeed = player.playerStats.moveSpeed;
@@ -93,6 +96,7 @@ public class LocoPlayerWalkingState : PlayerState
         moveInputInfluence = player.playerStats.moveInputInfluence;
         waitBeforeMomentumLoss = new WaitForSeconds(secondsBeforeMomentumLoss);
         //leftArmLayerIndex = armAnimator.GetLayerIndex("Left Arm");
+        footstepSound = PlayerSounds.Instance.footsteps_default;
     }
     public override void EnterState()
     {
@@ -102,12 +106,41 @@ public class LocoPlayerWalkingState : PlayerState
     {
 
     }
+    public bool isWalking = false;
+    public void ResetWalkSound()
+    {
+        deltaStepInterval = footstepInterval;
+        isWalking = false;
+    }
+    AudioClip footstepSound;
+    public void ChangeFootStepType(FootStepType footStepType)
+    {
+        switch (footStepType)
+        {
+            case FootStepType.DEFAULT:
+                footstepSound = PlayerSounds.Instance.footsteps_default;
+                break;
+            case FootStepType.WATER:
+                footstepSound = PlayerSounds.Instance.footsteps_water;
+                break;
+        }
+    }
     public override void FrameUpdate()
     {
         if (!allowMovement)
         {
             return;
         }
+        if(isWalking)
+        {
+            deltaStepInterval += Time.deltaTime;
+            if (deltaStepInterval >= footstepInterval)
+            {
+                deltaStepInterval = 0;
+                SoundFXManager.instance.PlaySoundFXClip(footstepSound, player.transform, 1, SoundType.SOUNDFX);
+            }
+        }
+        
         jumpDir = Vector3.up;
         if (PlayerStatus.Instance.isGrounded)
         {

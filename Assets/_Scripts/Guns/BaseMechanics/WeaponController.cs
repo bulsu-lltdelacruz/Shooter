@@ -148,7 +148,7 @@ public class WeaponController : MonoBehaviour
     void FireShot()
     {
         OnFire?.Invoke();
-
+        SoundFXManager.instance.PlaySoundFXClip(PlayerSounds.Instance.handgun_fire, transform, 1, SoundType.SOUNDFX);
         if (data.fireSound)
             audioSource.PlayOneShot(data.fireSound);
         if (data.muzzleFlashPrefab)
@@ -172,7 +172,13 @@ public class WeaponController : MonoBehaviour
                 
         }
         if(damageable != null)
-            damageable.TakeDamageWithImpact(transform.position);
+        {
+            damageable.TakeDamageWithImpact(transform.position, data.damageType);
+        }else
+        {
+            
+        }
+            
 
     }
 
@@ -195,7 +201,7 @@ public class WeaponController : MonoBehaviour
 
                     if (EntityManager.Instance.GetDamageableFromEnemy(hit.collider.gameObject, out IDamageable damageable))
                     {
-                        damageable.AddForceAndDamageAmount(data.damagePerPellet, data.pushForce);
+                        damageable.AddForceAndDamageAmount(data.damagePerPellet, data.pushForce, data.poiseDamagePerPellet);
                         damageableReturn = damageable;
                     }
                     

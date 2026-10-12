@@ -34,11 +34,23 @@ public class DashMeleeImpact : MonoBehaviour
         {
             if(enemiesHit.Contains(other.gameObject))
                 return;
+            //other.TryGetComponent<IDamageable>(out IDamageable damageable);
+            try
+            {
+                EntityManager.Instance.GetDamageableFromEnemy(other.gameObject, out IDamageable damageable);
+                //damageable.TakeDamage
+                SphereCollider collider = GetComponent<SphereCollider>();
+                Enemy enemy = other.gameObject.GetComponent<Enemy>();
+                float damageMultiplier = (enemy.isStunned)?1f:.06f;
+                damageable.AddForceAndDamageAmount(damage* damageMultiplier, 7, 0);
+                damageable.TakeDamageWithImpact(transform.position, DamageType.MELEE);
+            }
+            catch(KeyNotFoundException e)
+            {
+                Debug.LogError($"{other.gameObject.name} was not found inside the dictionary");
+            }
             enemiesHit.Add(other.gameObject);
-            other.TryGetComponent<IDamageable>(out IDamageable damageable);
-            //damageable.TakeDamage
-            SphereCollider collider = GetComponent<SphereCollider>();
-            damageable.TakeDamageWithImpact(damage, impactAmount, transform.position);
+
         }
     }
 

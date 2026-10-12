@@ -21,7 +21,7 @@ public class SplitterGrenade : BaseGrenade, IDamageable
         }
         ObjectPoolManager.ReturnObjectToPool(gameObject, ObjectPoolManager.PoolType.GameObjects);
     }
-    public void TakeDamageWithImpact(float amount, float impactAmount, Vector3 source)
+    public void TakeDamageWithImpact(float amount, float impactAmount, Vector3 source, DamageType damageType)
     {
         if (hasBeenHit)
             return;
@@ -54,12 +54,12 @@ public class SplitterGrenade : BaseGrenade, IDamageable
         hasBeenHit = false;
     }
 
-    public void TakeDamageWithImpact(Vector3 source)
+    public void TakeDamageWithImpact(Vector3 source, DamageType damageType)
     {
 
     }
 
-    public void AddForceAndDamageAmount(float damage, float forceAmount)
+    public void AddForceAndDamageAmount(float damage, float forceAmount, float poiseDamage)
     {
 
     }

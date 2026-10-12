@@ -1,0 +1,7 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_UI/Enemies/hpbar.uss?fileID=7433441132597879392&amp;guid=dd4cdc9237a435e42badd5260715f695&amp;type=3#hpbar"/>
+    <ui:VisualElement style="flex-grow: 0; flex-shrink: 0; height: 10px; width: 164px; align-self: center;">
+        <ui:VisualElement name="VisualElement" class="hpbars" style="background-color: rgb(48, 48, 48);"/>
+        <ui:VisualElement name="hp-bar" class="hpbars" style="background-color: rgb(183, 35, 35); align-self: flex-end;"/>
+    </ui:VisualElement>
+</ui:UXML>

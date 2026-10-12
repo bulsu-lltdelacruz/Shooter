@@ -124,6 +124,10 @@ public class InputHandler : IPlayerActions
 
     public void OnMove(InputAction.CallbackContext context)
     {
+        if (context.performed)
+            player.playerWalkingState.isWalking = true;
+        else if (context.canceled)
+            player.playerWalkingState.ResetWalkSound();
         moveDirection = context.ReadValue<Vector2>();
     }
     public void OnUI_Inventory(InputAction.CallbackContext context)

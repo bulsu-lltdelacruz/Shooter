@@ -28,7 +28,19 @@ public class BasicEnemy : Enemy
 
         originalExcludeLayers = controller.excludeLayers;
         originalIncludeLayers = controller.includeLayers;
+        //Add events on top of the base event form enemy that propagates to entity
     }
+    private void OnEnable()
+    {
+        OnEnableBase();
+        OnStunEvt += OnStun;
+    }
+    private void OnDisable()
+    {
+        OnDisableeBase();
+        OnStunEvt -= OnStun;
+    }
+
 
     public override void Attack(E_AttackType attackType, Vector3 target)
     {
@@ -54,14 +66,10 @@ public class BasicEnemy : Enemy
          transform.rotation = Quaternion.LookRotation(faceDirection);
          StartParryWindow();
     }
-    private void AttackAfterDelay()
-    {
-
-    }
     
     public void DamageEnemy(IDamageable playerDamageable)
     {
-        playerDamageable.TakeDamage(2, transform.position, transform.forward);
+        playerDamageable.TakeDamage(10, transform.position, transform.forward);
     }
     private void UpdateAttack()
     {
@@ -95,9 +103,14 @@ public class BasicEnemy : Enemy
     }
     private void Update()
     {
+        if (isStunned)
+        {
+            CountDownStun();
+            return;
+        }
         base.FrameUpdate2();
        // Debug.Log(isInAttackDelay);
-        if(isInAttackDelay)
+        if(isInParryWindow)
         {
             return;
         }
@@ -107,7 +120,18 @@ public class BasicEnemy : Enemy
         }
 
     }
-    public override void TakeDamageWithImpact(Vector3 hitPoint)
+    /*EVENTS*/
+    private void OnStun()
+    {
+        animator.SetBool("IsAttacking", false);
+        animator.SetBool("IsRunning", false);
+        animator.SetBool("IsIdle", false); 
+    }
+    private void OnRemoveStun()
+    {
+
+    }
+    /*public override void TakeDamageWithImpact(Vector3 hitPoint)
     {
         //base.TakeDamage(amount, hitPoint, hitNormal);
         // Debug.Log(isInAttackDelay + "  :  "+Time.deltaTime  );
@@ -120,5 +144,5 @@ public class BasicEnemy : Enemy
             Debug.Log("Normal shit");
         }
         EndParryWindow();
-    }
+    }*/
 }

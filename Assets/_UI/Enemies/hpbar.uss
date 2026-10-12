@@ -1,0 +1,11 @@
+:root {
+}
+
+.hpbars {
+    position: absolute;
+    min-width: auto;
+    min-height: auto;
+    width: 164px;
+    height: 10px;
+    align-self: center;
+}

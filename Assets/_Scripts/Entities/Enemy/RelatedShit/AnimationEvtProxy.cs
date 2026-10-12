@@ -11,4 +11,12 @@ public class AnimationEvtProxy : MonoBehaviour
     {
         enemy.EndParryWindow();
     }
+    public void EnableHitBox()
+    {
+        enemy.attackCollider.SetActive(true);
+    }
+    public void DisableHitBox()
+    {
+        enemy.attackCollider.SetActive(false);
+    }
 }
