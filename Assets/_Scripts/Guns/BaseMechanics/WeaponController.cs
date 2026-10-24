@@ -1,8 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
+using static UnityEngine.Rendering.VolumeComponent;
 using static UnityEngine.UI.Image;
 
 // Custom serializable event class so this UnityEvent's arguments show up properly in the Inspector.
@@ -13,12 +16,18 @@ using static UnityEngine.UI.Image;
 public class WeaponController : MonoBehaviour
 {
     [SerializeField] public WeaponData data;
+    [SerializeField] public BaseWeaponClass weaponState;
     [SerializeField] Transform firePoint;      // muzzle - used for projectile spawn / muzzle flash position
     [SerializeField] Camera aimCamera;         // raycast origin/direction comes from here, assign your player camera
     [SerializeField] public Transform fireOrigin;
     //[SerializeField] LineRenderer lineRenderer;
     [SerializeField] GameObject handGunLineRender;
     [SerializeField] private LayerMask gunMask;
+    PlayerInventory inventory;
+
+    [Header("UI Reference")]
+    [SerializeField] UIDocument HUDDoc;
+    Label bulletCountDocument;
 
     [Header("Events (wire these to animation, UI, camera recoil, etc.)")]
     public UnityEvent OnFire;
@@ -27,9 +36,6 @@ public class WeaponController : MonoBehaviour
     public AmmoChangedEvent OnAmmoChanged;
 
     int currentAmmo;
-    int reserveAmmo;
-    float nextFireTime;
-    bool isReloading;
     AudioSource audioSource;
 
     private int damageableLayer;
@@ -40,16 +46,16 @@ public class WeaponController : MonoBehaviour
     int cachedPelletCount = -1; 
     void Awake()
     {
+        inventory = GetComponent<PlayerInventory>();
         audioSource = GetComponent<AudioSource>();
-        currentAmmo = data.magazineSize;
-        reserveAmmo = data.reserveAmmo;
         damageableLayer = LayerMask.NameToLayer("Damageable");
         projectileLayer = LayerMask.NameToLayer("ProjectileDamageable");
+        bulletCountDocument = HUDDoc.rootVisualElement.Q<Label>("bullet-count");
     }
 
     void Start()
     {
-        OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
+        //currentAmmo = inventory.activeSlot.activeItem.currentBulletCount;
     }
 
     /// <summary>Call every frame while the fire button is held down. Only does anything for Auto weapons.</summary>
@@ -60,29 +66,25 @@ public class WeaponController : MonoBehaviour
     }
 
     /// <summary>Call once, on the frame the fire button is first pressed.</summary>
-    public void TryFirePressed()
+    public bool TryFirePressed()
     {
         switch (data.fireMode)
         {
+            case FireMode.Single:
+                return TryFireSingleShot();
             case FireMode.Auto:
-                TryFireSingleShot();
-                break;
+                return TryFireSingleShot();
             case FireMode.Burst:
                 TryStartBurst();
-                break;
-            case FireMode.Single:
-                TryFireSingleShot();
-                break;
+                return false;
             default:
                 TryFireSingleShot();
-                break;
+                return false;
         }
     }
 
-    void TryFireSingleShot()
+    bool TryFireSingleShot()
     {
-        if (isReloading) return;
-        if (Time.time < nextFireTime) return;
 
         /*if (currentAmmo <= 0)
         {
@@ -90,22 +92,25 @@ public class WeaponController : MonoBehaviour
             return;
         }*/
 
-        nextFireTime = Time.time + 1f / Mathf.Max(data.fireRate, 0.01f);
         //currentAmmo--;
-        OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
-
+        OnAmmoChanged?.Invoke(currentAmmo, inventory.activeSlot.activeItem.currentBulletCount);
+        if(inventory.activeSlot.activeItem.currentBulletCount <= 0)
+        {
+            //play no ammo
+            Debug.Log("No Ammo Left");
+            return false;
+        }
         FireShot();
+        return true;
     }
 
     void TryStartBurst()
     {
-        if (isReloading || Time.time < nextFireTime) return;
         StartCoroutine(BurstRoutine());
     }
 
     IEnumerator BurstRoutine()
     {
-        nextFireTime = Time.time + 1f / Mathf.Max(data.fireRate, 0.01f);
 
         for (int i = 0; i < data.burstCount; i++)
         {
@@ -116,7 +121,7 @@ public class WeaponController : MonoBehaviour
             }
 
             currentAmmo--;
-            OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
+            OnAmmoChanged?.Invoke(currentAmmo, inventory.activeSlot.activeItem.currentBulletCount);
             FireShot();
 
             yield return new WaitForSeconds(data.burstShotDelay);
@@ -148,6 +153,7 @@ public class WeaponController : MonoBehaviour
     void FireShot()
     {
         OnFire?.Invoke();
+        DecreaseBulletCount(1);
         SoundFXManager.instance.PlaySoundFXClip(PlayerSounds.Instance.handgun_fire, transform, 1, SoundType.SOUNDFX);
         if (data.fireSound)
             audioSource.PlayOneShot(data.fireSound);
@@ -181,17 +187,39 @@ public class WeaponController : MonoBehaviour
             
 
     }
+    public void RestoreBullets(float percent)
+    {
+        List<Slot> allSlots = inventory.GetInventorySlots();
+        Debug.Log(allSlots.Count);
+        foreach(Slot slot in allSlots)
+        {
+            if(slot.activeItem == null) continue;
+            int maxBullets = slot.activeItem.data.maxBulletCount;
+            int bulletsToBeAdded = (int)(maxBullets * percent);
+            if (slot.activeItem.currentBulletCount + bulletsToBeAdded > maxBullets)
+                bulletsToBeAdded = 0;
+            slot.activeItem.currentBulletCount += bulletsToBeAdded;
+            bulletCountDocument.text = inventory.activeSlot.activeItem.currentBulletCount.ToString();
+        }
 
+    }
+    public void DecreaseBulletCount(int amount)
+    {
+        inventory.activeSlot.activeItem.currentBulletCount -= amount;
+        bulletCountDocument.text = inventory.activeSlot.activeItem.currentBulletCount.ToString();
+    }
     IDamageable FireHitscan(Vector3 rawOrigin, Vector3 direction, bool isFromOtherSource, int pelletIndex)
     {
         IDamageable damageableReturn = null;
-        Vector3 origin = rawOrigin + aimCamera.transform.position;
+        // Vector3 origin = rawOrigin + aimCamera.transform.position;
+        Vector3 origin = aimCamera.transform.position;
         if (isFromOtherSource)
             origin = rawOrigin;
         //int barelCount = fireOrigin.Length;
        /* for (int i = 0; i < barelCount; i++)
         {*/
             Vector3 endPoint = origin + (direction * 999);
+            Debug.DrawRay(origin, direction*10f, Color.blue, 1f);
             if (Physics.Raycast(origin, direction, out RaycastHit hit, 999,gunMask))
             {
                 if (hit.transform.gameObject.CompareTag("Enemy"))
@@ -290,7 +318,7 @@ public class WeaponController : MonoBehaviour
         // build offset from camera's right/up so it rotates with the camera instead of staying world-aligned
         return aimCamera.transform.right * point.x + aimCamera.transform.up * point.y;
     }
-    public void Reload()
+    /*public void Reload()
     {
         if (isReloading || currentAmmo == data.magazineSize || reserveAmmo <= 0) return;
         StartCoroutine(ReloadRoutine());
@@ -311,5 +339,5 @@ public class WeaponController : MonoBehaviour
         isReloading = false;
         OnReloadComplete?.Invoke();
         OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
-    }
+    }*/
 }

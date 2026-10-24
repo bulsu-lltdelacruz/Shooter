@@ -1,0 +1,41 @@
+using UnityEngine;
+
+public class Door : Interactable
+{
+    [SerializeField] Vector3 direction;
+    [SerializeField]float speed;
+    [SerializeField] Transform targetTransform;
+    float deltaPosition;
+
+    float targetDistance;
+    float localHeight;
+    bool isOpening;
+    bool isOpened;
+    void Start()
+    {
+        interactableType = ItemType.Door;
+        MeshFilter meshFilter = targetTransform.GetComponent<MeshFilter>();
+
+        if (meshFilter != null && meshFilter.sharedMesh != null)
+        {
+            Vector3 localSize = meshFilter.sharedMesh.bounds.size;
+            targetDistance = localSize.x * transform.lossyScale.x;
+        }
+    }
+    public void OpenDoor()
+    {
+        isOpening = true;
+    }
+    private void Update()
+    {
+        if(isOpened)
+            return;
+        if (isOpening)
+        {
+            deltaPosition += speed * Time.deltaTime;
+            targetTransform.position += direction*speed*Time.deltaTime;
+            if(deltaPosition>= targetDistance)
+                isOpened = true;
+        }
+    }
+}

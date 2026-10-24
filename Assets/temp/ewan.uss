@@ -1,0 +1,12 @@
+:root {
+}
+
+.align {
+}
+
+.center-button {
+    width: 272px;
+    align-self: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

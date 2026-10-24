@@ -10,7 +10,8 @@ public enum WeaponType
 {
     None,
     Handgun,
-    Shotgun
+    Shotgun,
+    CrossGun
 }
 [CreateAssetMenu(fileName = "New Weapon", menuName = "ScriptableObjects/Weapons/Weapon Data")]
 public class WeaponData : ScriptableObject
@@ -50,8 +51,8 @@ public class WeaponData : ScriptableObject
     [Min(1)] public int pelletsPerShot;
 
     [Header("Ammo")]
-    public int magazineSize = 12;
-    public int reserveAmmo = 84;
+    public int maxBulletCount = 12;
+    //public int reserveAmmo = 84;
     public float reloadTime = 1.6f;
 
     [Header("Projectile Mode (optional)")]

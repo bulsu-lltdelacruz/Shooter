@@ -70,7 +70,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 525c54b678ac4c74f99ca62b05339b27, type: 2}
+  - {fileID: 2100000, guid: aa8f97548d1b542439c04386dc159f4b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -264,5 +264,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90c5fedc5d17f354d930ac2d14f64cf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Drops
-  dropType: 0
+  dropType: 1
   healingAmount: 10

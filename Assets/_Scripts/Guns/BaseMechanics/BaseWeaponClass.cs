@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BaseWeaponClass : MonoBehaviour
@@ -6,6 +7,7 @@ public class BaseWeaponClass : MonoBehaviour
     public WeaponData data;
     public Transform fireOrigin;
     public Texture2D icon;
+    public bool doesRequireReload;
     public string GUN_idleTrigger;
     public string GUN_shootTrigger;
     public string GUN_reloadTrigger;
@@ -18,4 +20,5 @@ public class BaseWeaponClass : MonoBehaviour
     public float scale;
     [Header("Gun Camera Z Position")]
     public float gunCameraZ;
+    [NonSerialized] public bool canShoot = true;
 }

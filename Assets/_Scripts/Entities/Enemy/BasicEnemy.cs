@@ -44,6 +44,7 @@ public class BasicEnemy : Enemy
 
     public override void Attack(E_AttackType attackType, Vector3 target)
     {
+        Debug.Log("FI(CK");
         if (isAttacking == true) // dont do shit if already attacking
             return;
 
@@ -52,6 +53,8 @@ public class BasicEnemy : Enemy
         StartAttacking();
 
         attckCollider.SetActive(true);
+        if(controller == null) 
+            Debug.Log("wawawa");
         controller.excludeLayers = originalExcludeLayers | playerLayerMask;
 
         animator.SetBool("IsRunning", false);

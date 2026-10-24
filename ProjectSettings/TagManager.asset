@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - Projectile
   - PickUp
+  - Door
   layers:
   - Default
   - TransparentFX
@@ -28,8 +29,8 @@ TagManager:
   - UIPickingIgnore
   - PickUp
   - Detector
-  - 
-  - 
+  - temp
+  - Door
   - 
   - 
   - 

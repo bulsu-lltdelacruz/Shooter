@@ -45,7 +45,10 @@ public class EnemyComboAttackState
         }
         return -1;
     }
-
+    public bool GetCanAttack()
+    {
+        return CanAttack;
+    }
     public void TryAttacking()
     {
         if(!CanAttack)

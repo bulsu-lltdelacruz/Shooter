@@ -14,7 +14,7 @@ public class Player : Entity
     [NonSerialized] public CharacterController characterController;
     [SerializeField] public Transform grenadeOrigin;
     #region ANIMATIONS
-    [SerializeField]Animator armAnimator;
+    [SerializeField]public Animator armAnimator;
     [Header("just the thing first, gets replaced inscript, probably temporary")]
     [SerializeField]public Animator gunAnimator;
     public AnimationEventBus animationEventBus;
@@ -25,7 +25,7 @@ public class Player : Entity
     public PlayerStateMachine leftStateMachine;
     public PlayerStateController PlayerStateController;
 
-    PlayerShootingState playerShootingState;
+    public PlayerShootingState playerShootingState;
     public PlayerIdleState playerIdleState;
     public PlayerSwitchingState playerSwitchingState;
     PlayerReloadState playerReloadState;
@@ -164,7 +164,7 @@ public class Player : Entity
         if (currentHP <=0)
         {
             Debug.Log("Die");
-           // UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.isPlaying = false;
         }
     }
     public override void Heal(float healAmount)

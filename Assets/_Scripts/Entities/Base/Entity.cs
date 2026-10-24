@@ -35,9 +35,9 @@ public class Entity : MonoBehaviour, IDamageable
     {
         currentPoise = Mathf.Max(0, currentPoise - totalPoiseDamage);
         currentHP = Mathf.Max(0, currentHP - totalPelletDamage);
-        // Debug.Log("Poise: "+ currentPoise);
         if (currentPoise <= 0)
         {
+            HitLag.Instance.SlowMo(.5f,.5f);
             Debug.Log("Stun");
             OnStunEvt?.Invoke();
         }
@@ -71,16 +71,22 @@ public class Entity : MonoBehaviour, IDamageable
     }
     public virtual void Die(int multiplier)
     {
-        GameObject dropPrefab = Prefabs.Instance.bulletDropPrefab;
-        int dropNumber = 2* multiplier;
+        GameObject healthDrop = Prefabs.Instance.healthDropPrefab;
+        GameObject bulletDropPrefab = Prefabs.Instance.bulletDropPrefab;
+        int dropNumber = (2* multiplier)+ UnityEngine.Random.Range(0,4);
+
         Vector3[] directions = MathStuff.GetRadialSpread(dropNumber, Vector3.up);
         for (int i = 0; i < directions.Length; i++)
         {
-            GameObject obj = ObjectPoolManager.SpawnObject(dropPrefab, transform.position, Quaternion.LookRotation(directions[i]));
+            GameObject obj = null;
+            if (i >= directions.Length/2)
+                obj = ObjectPoolManager.SpawnObject(bulletDropPrefab, transform.position, Quaternion.LookRotation(directions[i]));
+            else
+                obj = ObjectPoolManager.SpawnObject(healthDrop, transform.position, Quaternion.LookRotation(directions[i]));
             Rigidbody rb = obj.GetComponent<Rigidbody>();
-
+            float randomForce = UnityEngine.Random.Range(1f, 2f);
             Vector3 forceDirection = (obj.transform.forward + Vector3.up * 0.3f).normalized;
-            rb.AddForce(forceDirection * 2f, ForceMode.Impulse);
+            rb.AddForce(forceDirection * randomForce, ForceMode.Impulse);
         }
 
 
@@ -90,7 +96,7 @@ public class Entity : MonoBehaviour, IDamageable
     }
     public virtual void Die()
     {
-        GameObject dropPrefab = Prefabs.Instance.bulletDropPrefab;
+        GameObject dropPrefab = Prefabs.Instance.healthDropPrefab;
         int dropNumber = 2;
         Vector3[] directions = MathStuff.GetRadialSpread(dropNumber, Vector3.up);
         for (int i = 0; i < directions.Length; i++)

@@ -13,14 +13,17 @@ public class PlayerReloadState : PlayerState
     }
     public override void EnterState()
     {
+        player.playerInventory.activeSlot.activeItem.weaponClass.canShoot = false;
         gunAnimator = player.gunAnimator;
         gunAnimator.SetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_reloadTrigger);
         armAnimator.SetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.ARM_reloadTrigger);
         //gunAnimator.SetTrigger("GunReload1");
         //armAnimator.SetTrigger("ArmReload1");
+        baseCooldown = player.playerInventory.activeSlot.activeItem.data.reloadTime;
     }
     public override void ExitState()
     {
+        deltaTime = 0;
         gunAnimator = player.gunAnimator;
         gunAnimator.ResetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_reloadTrigger);
         armAnimator.ResetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.ARM_reloadTrigger);
@@ -32,8 +35,12 @@ public class PlayerReloadState : PlayerState
         deltaTime += Time.deltaTime;
         if (deltaTime > baseCooldown)
         {
-            player.PlayerStateController.TryChangeState(E_PlayerStates.IDLE);
+            player.playerInventory.activeSlot.activeItem.weaponClass.canShoot = true;
             deltaTime = 0f;
+        }
+        if(player.playerInventory.activeSlot.activeItem.weaponClass.canShoot)
+        {
+            player.PlayerStateController.TryChangeState(E_PlayerStates.IDLE);
         }
     }
     public override void PhysUpdate()

@@ -2,6 +2,15 @@ using UnityEngine;
 
 public class PlayerIdleState : PlayerState
 {
+    // Remember exactly what EnterState switched on. ExitState clears *those* triggers,
+    // no matter what the inventory's active item has become in the meantime.
+    // (Previously ExitState read activeItem at exit time, so if the active item had
+    // already been swapped, the NEW weapon's trigger names were cleared and the OLD
+    // weapon's idle bools stayed true -> two idle bools on at once.)
+    private Animator enteredGunAnimator;
+    private BaseWeaponClass enteredWeapon;
+    private bool isIdle;
+
     public PlayerIdleState(
         Player player,
         PlayerStateMachine playerStateMachine,
@@ -11,31 +20,69 @@ public class PlayerIdleState : PlayerState
     {
 
     }
+
     public override void EnterState()
     {
+        // Never stack idle on top of idle.
+        ClearIdle();
+
+        Slot slot = player.playerInventory.activeSlot;
+        if (slot == null || slot.activeItem == null)
+        {
+            Debug.LogWarning("Idle: no active weapon to play idle for");
+            return;
+        }
+
         gunAnimator = player.gunAnimator;
-        gunAnimator.SetBool(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_idleTrigger, true);
-        armAnimator.SetBool(player.playerInventory.activeSlot.activeItem.weaponClass.ARM_idleTrigger, true);
+        enteredGunAnimator = gunAnimator;
+        enteredWeapon = slot.activeItem.weaponClass;
+
+        if (enteredGunAnimator != null)
+            enteredGunAnimator.SetBool(enteredWeapon.GUN_idleTrigger, true);
+        if (armAnimator != null)
+            armAnimator.SetBool(enteredWeapon.ARM_idleTrigger, true);
+
+        isIdle = true;
+
+        if (!player.playerInventory.activeSlot.activeItem.weaponClass.canShoot)
+        {
+            player.PlayerStateController.TryChangeState(E_PlayerStates.RELOAD);
+        }
     }
+
     public override void ExitState()
     {
-        if (player.playerInventory.activeSlot == null)
-        {
-            Debug.LogWarning("Active slot is currently null");
-            return;//-0.35, 40 pistol, -0.75 ,40 shotgun
-        }
-        gunAnimator = player.gunAnimator;
-        gunAnimator.SetBool(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_idleTrigger, false);
-        armAnimator.SetBool(player.playerInventory.activeSlot.activeItem.weaponClass.ARM_idleTrigger, false);
+        ClearIdle();
     }
+
+    private void ClearIdle()
+    {
+        if (!isIdle) return;
+
+        // Unity-null checks: the old gun object may already be destroyed.
+        if (enteredWeapon != null)
+        {
+            if (enteredGunAnimator != null)
+                enteredGunAnimator.SetBool(enteredWeapon.GUN_idleTrigger, false);
+            if (armAnimator != null)
+                armAnimator.SetBool(enteredWeapon.ARM_idleTrigger, false);
+        }
+
+        enteredGunAnimator = null;
+        enteredWeapon = null;
+        isIdle = false;
+    }
+
     public override void FrameUpdate()
     {
-        //Debug.Log(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_idleTrigger);
+
     }
+
     public override void PhysUpdate()
     {
 
     }
+
     public override void AnimationTriggerEvent()
     {
 

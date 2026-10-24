@@ -68,6 +68,7 @@ public class PlayerStateController
         this.leftStateMachine = leftStateMachine;
         this.playerLeftIdleState = playerLeftIdleState;
         this.playerLeftThrowState = playerLeftThrowState;
+        deltaTime = reloadTime;
     }
     public bool TryChangeState(E_PlayerStates newState)
     {
@@ -100,9 +101,12 @@ public class PlayerStateController
         playerStateMachine.ChangeState(playerIdleState);
         return true;
     }
+    float deltaTime;
+    public float reloadTime;
     private bool TryShoot()
     {
-        if(playerStateMachine.currentState is PlayerSwitchingState)
+        if(playerStateMachine.currentState is PlayerSwitchingState || playerStateMachine.currentState is PlayerReloadState
+            || !player.playerInventory.activeSlot.activeItem.weaponClass.canShoot)
             return false;
         if (playerStateMachine.currentState is PlayerShootingState)
             return true;
@@ -126,7 +130,7 @@ public class PlayerStateController
             return false;
         if (playerStateMachine.currentState is PlayerReloadState)
             return true;
-        if (playerStateMachine.currentState is PlayerShootingState ||
+        if (//playerStateMachine.currentState is PlayerShootingState ||
             playerStateMachine.currentState is PlayerReload2State ||
              playerStateMachine.currentState is PlayerMeleeState || playerStateMachine.currentState is PlayerDashMeleeState)
             return false;
@@ -172,13 +176,14 @@ public class PlayerStateController
     }
     private bool TrySwitch()
     {
-        if (playerStateMachine.currentState is PlayerDashMeleeState)
+        if (playerStateMachine.currentState is PlayerDashMeleeState || playerStateMachine.currentState is PlayerShootingState)
             return false;
         playerStateMachine.ChangeState(playerSwitchingState);
         return true;
     }
     public void CheckContinuousInputs()
     {
+        //playerShootingState.
         if (isAttacking)
             TryShoot();
         if (isMeleeing)

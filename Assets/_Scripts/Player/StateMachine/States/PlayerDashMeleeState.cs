@@ -26,6 +26,7 @@ public class PlayerDashMeleeState : PlayerState
             player.playerStateMachine.ChangeState(player.playerMeleeState);
             return;
         }
+        dashTimer = 0f;
         gunAnimator = player.gunAnimator;
         player.playerWalkingState.allowMovement = false;
         armAnimator.SetBool("IsArmMeleeStart", true);
@@ -47,10 +48,17 @@ public class PlayerDashMeleeState : PlayerState
         RemoveLockedOnTarget();
         player.meleeCollider.gameObject.SetActive(false);
         player.meleeCollider.targetEnemy = null;
+        dashTimer = 0f;
     }
+    // fields
+    float dashTimer;
+    const float maxDashTime = 0.6f;       // bail-out so you can never get stuck
+    const float arriveTolerance = 0.1f;   // fixes the float-equality problem
+
+
+
     public override void FrameUpdate()
     {
-        
         gunAnimator = player.gunAnimator;
         if (exitFlag)
         {
@@ -63,62 +71,28 @@ public class PlayerDashMeleeState : PlayerState
             return;
         }
 
-        /* Vector3 rawDirection = (targetTransform.position + (-playerTransform.forward * 1.2f)) - playerTransform.position;
-         if (player.meleeCollider.isTargetInRange)
-         {
-             GameObject impactPrefab = Prefabs.Instance.GetImpactPrefab();
-             exitFlag = true;
-             armAnimator.SetBool("IsArmMeleeStart", false);
-             armAnimator.SetTrigger("ArmMelee1");
-             ObjectPoolManager.SpawnObject(impactPrefab, playerTransform.position, playerTransform.rotation, ObjectPoolManager.PoolType.GameObjects);
-             return;
-             // target.
-         }
-         playerTransform.position = Vector3.MoveTowards(
-             playerTransform.position,
-             targetTransform.position,
-             dashSpeed * Time.deltaTime
-         );*/
+        dashTimer += Time.deltaTime;
+
+        // flat direction: ignore height difference so you don't dive into the floor
         Vector3 toTarget = targetTransform.position - playerTransform.position;
+        toTarget.y = 0f;
         float distance = toTarget.magnitude;
-        float stopDistance = 1.32f; // melee range from the enemy's center
-        if (distance <= stopDistance)
+        float stopDistance = 1.51f;
+
+        if (distance <= stopDistance + arriveTolerance || dashTimer >= maxDashTime)
         {
             GameObject impactPrefab = Prefabs.Instance.GetImpactPrefab();
             exitFlag = true;
             armAnimator.SetBool("IsArmMeleeStart", false);
             armAnimator.SetTrigger("ArmMelee1");
             ObjectPoolManager.SpawnObject(impactPrefab, playerTransform.position, playerTransform.rotation, ObjectPoolManager.PoolType.GameObjects);
+            HitLag.Instance.Freeze(StaticStuff.hitLagTime);
             return;
         }
 
-        // Stop point sits on the line between you and the enemy, so it's always reachable
-        Vector3 stopPoint = targetTransform.position - toTarget.normalized * stopDistance;
-
-        playerTransform.position = Vector3.MoveTowards(
-            playerTransform.position,
-            stopPoint,
-            dashSpeed * Time.deltaTime
-        );
-        /*     Vector3 rawDirection =(targetTransform.position+(-playerTransform.forward * 1.2f)) - playerTransform.position;
-             float distance = rawDirection.magnitude;
-             float stopDistance = .5f; //
-             if (distance <= stopDistance)
-             {
-                 GameObject impactPrefab = Prefabs.Instance.GetImpactPrefab();
-                 exitFlag = true;
-                 armAnimator.SetBool("IsArmMeleeStart", false);
-                 armAnimator.SetTrigger("ArmMelee1");
-                 ObjectPoolManager.SpawnObject(impactPrefab, playerTransform.position, playerTransform.rotation, ObjectPoolManager.PoolType.GameObjects);
-                 return;
-                 // target.
-             }
-             playerTransform.position = Vector3.MoveTowards(
-                 playerTransform.position,
-                 targetTransform.position,
-                 dashSpeed * Time.deltaTime
-             );*/
-
+        // never step past the stop distance
+        float step = Mathf.Min(dashSpeed * Time.deltaTime, distance - stopDistance);
+        player.characterController.Move(toTarget.normalized * step);
     }
     /*IEnumerator ExitAfterTime()
     {

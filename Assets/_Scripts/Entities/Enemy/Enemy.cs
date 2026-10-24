@@ -29,6 +29,7 @@ public class Enemy : Entity
     protected float deltaStunTime;
     EnemyComboAttackState comboAttackState;
     protected EnemySounds sounds;
+    protected bool isDashing = false;
     //protected WaitForSeconds attackDelayWait;
     protected void StartBase()
     {
@@ -36,15 +37,20 @@ public class Enemy : Entity
         playerDamageable = EntityManager.Instance.GetPlayerDamageable();
         playerTransform = playerObject.transform;
         currentPoise = maxPoise;
-        currentHP = maxHP;
-        HPBar = HPBarDoc.rootVisualElement.Q<VisualElement>("hp-bar");
-        HPBarWidth = HPBar.style.width.value.value;
+        currentHP = maxHP;// StartBase()
+        if (HPBarDoc != null)
+        {
+            HPBar = HPBarDoc.rootVisualElement.Q<VisualElement>("hp-bar");
+            HPBarWidth = HPBar.style.width.value.value;
+        }
         sounds = GetComponentInChildren<EnemySounds>();
         //agent.updateRotation = false;
     }
     protected void OnEnableBase()
     {
         Debug.Log("add");
+        if (EntityManager.Instance == null)
+            Debug.Log("actually entity null");
         EntityManager.Instance.RegisterEnemy(gameObject);
         OnStunEvt += OnStun;
     }
@@ -79,6 +85,11 @@ public class Enemy : Entity
     {
 
     }
+    public virtual void Dash(Vector3 target)
+    {
+        isDashing = true;
+        agent.enabled = false;
+    }
     #endregion END ATTACKS
     public void FaceDirection(Vector3 targetDirection)
     {
@@ -99,7 +110,7 @@ public class Enemy : Entity
     public override void TakeDamageWithImpact(Vector3 source, DamageType damageType)
     {
         base.TakeDamageWithImpact(source, damageType);
-        if(currentHP <=0)
+        if (currentHP <=0)
         {
             if (isStunned && damageType.Equals(DamageType.MELEE))
             {
@@ -113,8 +124,11 @@ public class Enemy : Entity
         }
         float hpPercent = (currentHP/maxHP)*100;
         HPBar.style.width = Length.Percent(hpPercent);
+        Debug.Log("parry STYATAUUS : " +isInParryWindow);
         if (isInParryWindow)
         {
+            Debug.Log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            HitLag.Instance.Freeze(.5f);
             StopAttack();
         }
         EndParryWindow();

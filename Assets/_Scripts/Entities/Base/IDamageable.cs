@@ -14,5 +14,6 @@ public enum DamageType
 {
     MELEE,
     HANDGUN,
-    SHOTGUN
+    SHOTGUN,
+    CROSSGUN
 }

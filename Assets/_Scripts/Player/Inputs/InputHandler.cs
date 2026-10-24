@@ -17,7 +17,7 @@ public class InputHandler : IPlayerActions
         playerActions = inputActions.Player;
         playerActions.SetCallbacks(this);
         playerActions.Enable();
-        interactMask = LayerMask.GetMask("Weapon", "Interactable");
+        interactMask = LayerMask.GetMask("Weapon", "Interactable", "Door");
         this.player = player;
     }
     public InputActions_Player GetInputActions()
@@ -40,13 +40,13 @@ public class InputHandler : IPlayerActions
     }
     public void OnReload(InputAction.CallbackContext context)//this is usually for detatching shit
     {
-        if (context.performed)
-            player.PlayerStateController.TryChangeState(E_PlayerStates.RELOAD);
+       /* if (context.performed)
+            player.PlayerStateController.TryChangeState(E_PlayerStates.RELOAD);*/
     }
     public void OnReload2(InputAction.CallbackContext context)//this is usually for reattaching shit
     {
-        if (context.performed)
-            player.PlayerStateController.TryChangeState(E_PlayerStates.RELOAD2);
+        /*if (context.performed)
+            player.PlayerStateController.TryChangeState(E_PlayerStates.RELOAD2);*/
     }
 
     public void OnMelee(InputAction.CallbackContext context)
@@ -65,14 +65,25 @@ public class InputHandler : IPlayerActions
         if (Physics.Raycast(player.transform.position, camForward, out RaycastHit hit, 100f, interactMask))
         {
             GameObject item = hit.collider.gameObject;
-            ItemType type = item.GetComponent<Interactable>().interactableType;
+            ItemType type = ItemType.None;
+            if (item.TryGetComponent<Interactable>(out Interactable interactable))
+            {
+                type = interactable.interactableType;
+            }
             switch (type)
             {
                 case ItemType.Weapon:
                         WeaponInteractable weapInteractable = item.GetComponent<WeaponInteractable>();
                         player.playerInventory.AddToSlot(weapInteractable.prefab.GetComponent<BaseWeaponClass>());
                     break;
+                case ItemType.Door:
+                    if(hit.distance <= 1.1f)
+                    item.GetComponent<Door>().OpenDoor();
+                    break;
+                case ItemType.None:
+                    break;
             }
+            player.weaponController.DecreaseBulletCount(0);//just to update
         }
         
     }
@@ -167,6 +178,7 @@ public class InputHandler : IPlayerActions
         }
         player.playerSwitchingState.SetWeaponSlot(int.Parse(control.name));
         player.PlayerStateController.TryChangeState(E_PlayerStates.SWITCH);
+        player.weaponController.DecreaseBulletCount(0);//just to update
         
     }
 

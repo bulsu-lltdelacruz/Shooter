@@ -7,6 +7,7 @@ using System;
 public class Prefabs : MonoBehaviour
 {
     public GameObject impaactPrefab;
+    public GameObject healthDropPrefab;
     public GameObject bulletDropPrefab;
     [NonSerialized]public static Prefabs Instance;
     private void Start()

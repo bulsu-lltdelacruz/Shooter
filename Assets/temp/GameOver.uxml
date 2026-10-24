@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/temp/ewan.uss?fileID=7433441132597879392&amp;guid=baa863cdebb2b6d43a3f8f7a9ebc83f3&amp;type=3#ewan"/>
+    <ui:VisualElement name="parent" style="flex-grow: 1; justify-content: center;">
+        <ui:VisualElement style="flex-grow: 0; width: 378px; height: 600px; background-color: rgb(255, 255, 255); justify-content: center; align-self: center; max-height: 437px; min-height: 437px;">
+            <ui:Label text="Label" name="result" class="align" style="-unity-text-align: upper-center; font-size: 29px; margin-bottom: 77px;"/>
+            <ui:Button text="Restart" name="restart-btn" class="align center-button"/>
+            <ui:Button text="Quit" name="quit-btn" class="align center-button"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

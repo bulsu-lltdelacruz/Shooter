@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0db2f4bc3a4af364dbd119bfb69aafc0, type: 3}
+  m_Name: CrossGun
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  weaponName: Cross
+  weaponType: 3
+  damageType: 0
+  icon: {fileID: -1008301579157283121, guid: 1c02df6dba34f74419d2698b8c45458e, type: 3}
+  fireMode: 0
+  fireRate: 0.25
+  burstCount: 3
+  burstShotDelay: 0.08
+  damagePerPellet: 55
+  poiseDamagePerPellet: 5
+  pushForce: 5
+  range: 100
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  bulletSpread: 0
+  bulletStartSpread: 0
+  pelletsPerShot: 1
+  maxBulletCount: 999
+  reloadTime: 1.542
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 60
+  muzzleFlashPrefab: {fileID: 0}
+  impactEffectPrefab: {fileID: 0}
+  fireSound: {fileID: 0}
+  emptySound: {fileID: 0}

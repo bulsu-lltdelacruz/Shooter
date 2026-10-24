@@ -17,7 +17,7 @@ MonoBehaviour:
   damageType: 2
   icon: {fileID: 3506167780502562645, guid: 1c02df6dba34f74419d2698b8c45458e, type: 3}
   fireMode: 0
-  fireRate: 6
+  fireRate: 0.25
   burstCount: 3
   burstShotDelay: 0.08
   damagePerPellet: 5.5
@@ -30,9 +30,8 @@ MonoBehaviour:
   bulletSpread: 8
   bulletStartSpread: 0.04
   pelletsPerShot: 10
-  magazineSize: 12
-  reserveAmmo: 84
-  reloadTime: 1.6
+  maxBulletCount: 20
+  reloadTime: 1.458
   projectilePrefab: {fileID: 0}
   projectileSpeed: 60
   muzzleFlashPrefab: {fileID: 0}

@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
@@ -13,10 +15,14 @@ public class BigSwordEnemy : Enemy
     //[SerializeField] CapsuleCollider enemyCollider;
 
     private float deltaDistance;
-    private Vector3 currentDashDirection;
+    private Vector3 currentFinalDashTarget;
 
-    // Changed to LayerMask to store the bitmask properly
-    private LayerMask playerLayerMask;
+
+    float normalSpeed, normalAcceleration;
+    [SerializeField] private float dashAcceleration = 60f;
+
+// Changed to LayerMask to store the bitmask properly
+private LayerMask playerLayerMask;
     private LayerMask originalExcludeLayers;
     private LayerMask originalIncludeLayers;
     int wallLayer;
@@ -30,6 +36,8 @@ public class BigSwordEnemy : Enemy
         //DEBUG
         root = DEBUG_Document.rootVisualElement;
         StartBase();
+        normalSpeed = agent.speed;
+        normalAcceleration = agent.acceleration;
         controller = GetComponent<CharacterController>();
         animator.SetBool("IsRunning", true);
         enemyStateMachine = new EnemyStateMachine();
@@ -61,32 +69,64 @@ public class BigSwordEnemy : Enemy
         currentTarget = target;
         comboAttackState.TryAttacking();
     }
-    public override void Attack()
-    {//called inside coomboattackStat4e actually attacks
-        StartAttacking();
+    public override void Dash(Vector3 target)
+    {
+        if (isAttacking || isDashing) return;
+        isDashing = true;
 
-       // attackCollider.SetActive(true);
+        Vector3 stop = GetStopPoint(target);
+        if (NavMesh.SamplePosition(stop, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+            stop = hit.position;                 // snap the point onto the navmesh
+
+        currentFinalDashTarget = stop;
+        agent.speed = dashSpeed;
+        agent.acceleration = dashAcceleration;
+        agent.SetDestination(stop);
+    }
+
+    private void EndDash()
+    {
+        isDashing = false;
+        agent.speed = normalSpeed;
+        agent.acceleration = normalAcceleration;
+    }
+    private Vector3 GetStopPoint(Vector3 target)
+    {
+        float stopDistance = 1.5f;
+        Vector3 dir = target - transform.position;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude <= stopDistance * stopDistance)
+            return transform.position;   // already close enough
+
+        return target - dir.normalized * stopDistance;
+    }
+    public override void Attack()
+    {
+        EndDash();
+        StartAttacking();
+        attackCollider.SetActive(true);
         controller.excludeLayers = originalExcludeLayers | playerLayerMask;
 
         animator.SetBool("IsRunning", false);
         animator.SetBool("IsIdle", false);
         FaceDirection(currentTarget);
-        /*currentDashDirection = target - transform.position;
-        currentDashDirection.Normalize();
-        currentDashDirection.y = 0;
-        Vector3 faceDirection = new Vector3(currentDashDirection.x, 0, currentDashDirection.z);
-        transform.rotation = Quaternion.LookRotation(faceDirection);*/
     }
+   // public override void Attack()
+    //{//called inside coomboattackStat4e actually attacks
+    //    IsDashFirst = true;
+      //  agent.enabled = false;
+    //}
     public override void IncrementCharacterMovement(float amount)
     {
         if (amount == 0)
             return;
-        transform.position+= transform.forward*(amount*Time.deltaTime);
+        transform.position += transform.forward * (amount * Time.deltaTime);
     }
     public override void StopAttack()
     {
         //EndAttacking();
-      //  attackCollider.SetActive(false);
+        //  attackCollider.SetActive(false);
         deltaDistance = 0;
         deltaAttackDelay = 0;
 
@@ -94,7 +134,7 @@ public class BigSwordEnemy : Enemy
         //animator.SetBool("IsIdle", true);
 
         //isAttacking = false;
-        currentDashDirection = Vector3.zero;
+        currentFinalDashTarget = Vector3.zero;
 
         controller.excludeLayers = originalExcludeLayers;
         controller.includeLayers = originalIncludeLayers;
@@ -111,20 +151,32 @@ public class BigSwordEnemy : Enemy
     private void UpdateAttack()
     {
         float deltaTime = Time.deltaTime;
-        controller.Move(currentDashDirection * dashSpeed * deltaTime);
+        //controller.Move(currentDashDirection * dashSpeed * deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, currentFinalDashTarget, dashSpeed*Time.deltaTime);
         deltaDistance += dashSpeed * deltaTime;
-
-        if (deltaDistance > dashDistance)
+        if (deltaDistance >= dashDistance)
         {
-            StopAttack();
+            StartAttacking();
+
+            // attackCollider.SetActive(true);
+            controller.excludeLayers = originalExcludeLayers | playerLayerMask;
+
+            animator.SetBool("IsRunning", false);
+            animator.SetBool("IsIdle", false);
+            FaceDirection(currentTarget);
+            /*currentDashDirection = target - transform.position;
+            currentDashDirection.Normalize();
+            currentDashDirection.y = 0;
+            Vector3 faceDirection = new Vector3(currentDashDirection.x, 0, currentDashDirection.z);
+            transform.rotation = Quaternion.LookRotation(faceDirection);*/
         }
     }
-   
+
     private void Update()
     {
-        root.Q<Label>("label-1").text = "Attack  : "+isAttacking;
+        root.Q<Label>("label-1").text = "Attack  : " + isAttacking;
         root.Q<Label>("label-2").text = "Combo   : " + comboAttackState.currentComboNameForDebugging;
-        root.Q<Label>("label-3").text = "Cooldown: " + comboAttackState.currentCooldownStateForDebugging;
+        root.Q<Label>("label-3").text = "DASHING: " + isDashing;
         if (isStunned)
         {
             CountDownStun();
@@ -140,14 +192,25 @@ public class BigSwordEnemy : Enemy
             //UpdateAttack();
             return;
         }
+        if (isDashing)
+        {
+            Debug.Log("DASHING");
+            transform.position = Vector3.MoveTowards(transform.position, currentFinalDashTarget, dashSpeed * Time.deltaTime);
+            if ((currentFinalDashTarget - transform.position).sqrMagnitude <= 0.0001f)
+            {
+                EndDash();
+                agent.enabled = true;
+            }
+        }
         base.FrameUpdate2();
         // Debug.Log(isInAttackDelay);
-       
+
 
     }
     /*EVENTS*/
     private void OnStun()
     {
+        EndDash();
         animator.SetBool("IsAttacking", false);
         animator.SetBool("IsRunning", false);
         animator.SetBool("IsIdle", false);

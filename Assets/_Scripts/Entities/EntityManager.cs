@@ -14,6 +14,7 @@ public class EntityManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("instance awawke");
         if(Instance == null)
             Instance = this;
         if(enemyEntities == null)
