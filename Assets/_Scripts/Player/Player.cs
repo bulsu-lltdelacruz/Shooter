@@ -172,7 +172,7 @@ public class Player : Entity
     public override void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
     {
         Debug.Log($"HIT for {amount} on frame {Time.frameCount}\n{System.Environment.StackTrace}");
-        // HintDamageManager.Instance.ShowDamage();
+        HintDamageManager.Instance.ShowDamage();
         //Debug.Log("Damaged with " + amount +" ugh ouchies");
         currentHP = Mathf.Max(0, currentHP-=amount);
         float hpPercent = (currentHP / maxHP) * 100;

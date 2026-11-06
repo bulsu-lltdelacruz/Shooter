@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/_UI/Menus/menu.uss?fileID=7433441132597879392&amp;guid=7da97ccb9b91879449a77180eb121c3c&amp;type=3#menu"/>
     <ui:VisualElement name="menu-parent" style="flex-grow: 1; display: flex;">
         <ui:VisualElement name="dim" style="flex-grow: 1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background-color: rgb(0, 0, 0); opacity: 0.58;"/>
-        <ui:VisualElement name="parent-parent" style="flex-grow: 1; justify-content: center;">
+        <ui:VisualElement name="parent-parent" style="flex-grow: 1; justify-content: center; display: flex;">
             <ui:VisualElement name="parent" class="main-color" style="flex-grow: 1; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgb(166, 166, 166); border-right-color: rgb(166, 166, 166); border-top-color: rgb(166, 166, 166); border-bottom-color: rgb(166, 166, 166); background-image: url(&quot;project://database/Assets/_UI/Menus/final%20scifi.png?fileID=2800000&amp;guid=325cabafbc2eae64b94c7bc3a55e8814&amp;type=3#final scifi&quot;); -unity-background-image-tint-color: rgba(14, 14, 14, 0); background-position-x: left 0; -unity-background-scale-mode: scale-and-crop; background-position-y: top 0; background-color: rgba(0, 0, 0, 0); width: auto; max-width: 348px; max-height: 560px; justify-content: flex-start; align-items: stretch; align-self: center; min-width: 348px;">
                 <ui:VisualElement name="top" style="flex-grow: 1; justify-content: center; align-items: center;">
                     <ui:Label text="Game Paused" name="pause-label" class="font" style="font-size: 51px; width: 290px;"/>
@@ -11,7 +11,54 @@
                 <ui:VisualElement name="bottom" style="flex-grow: 1; padding-top: 34px;">
                     <ui:Button text="Continue" name="continue-btn" class="buttons font"/>
                     <ui:Button text="Restart" name="restart-btn" class="buttons font"/>
+                    <ui:Button text="Controls" name="control-btn" class="buttons font"/>
                     <ui:Button text="Quit to Main Menu" name="quit-btn" class="buttons font"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="control-parent" style="flex-grow: 1; justify-content: center; display: none;">
+            <ui:VisualElement name="parent" class="main-color" style="flex-grow: 1; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgb(166, 166, 166); border-right-color: rgb(166, 166, 166); border-top-color: rgb(166, 166, 166); border-bottom-color: rgb(166, 166, 166); background-image: url(&quot;project://database/Assets/_UI/Menus/final%20scifi.png?fileID=2800000&amp;guid=325cabafbc2eae64b94c7bc3a55e8814&amp;type=3#final scifi&quot;); -unity-background-image-tint-color: rgba(14, 14, 14, 0); background-position-x: left 0; -unity-background-scale-mode: scale-and-crop; background-position-y: top 0; background-color: rgba(0, 0, 0, 0); width: auto; max-width: 380px; max-height: 560px; justify-content: flex-start; align-items: stretch; align-self: center; min-width: 382px;">
+                <ui:VisualElement name="top-menu" style="flex-grow: 1; justify-content: center; align-items: center; max-height: 25%;">
+                    <ui:Label text="Controls" name="pause-label" class="font" style="font-size: 51px; width: 290px;"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="bottom-menu" style="flex-grow: 1; padding-top: 0; max-height: 75%;">
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="Walk" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[WASD]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="Interact" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[F]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="Shoot" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[LMB]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="Dash" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[Shift]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="Jump" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[Space]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="Melee" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[E]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="DashMelee" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[RMB]+[E]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="Spell" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[RMB]+[LMB]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; max-height: 34px; flex-direction: row;">
+                        <ui:Label text="Switch Weapons" name="Label" class="font" style="font-size: 24px; width: 50%;"/>
+                        <ui:Label text="[ 1 ]/[ 2 ]/[ 3 ]" class="font" style="font-size: 24px; width: 50%;"/>
+                    </ui:VisualElement>
+                    <ui:Button text="Back" name="back" class="buttons font" style="margin-top: 14px;"/>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

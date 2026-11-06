@@ -15,7 +15,7 @@ public class HintDamageManager : MonoBehaviour
     Coroutine damageRoutine;
 
     const float DefaultHintTime = 1f;
-    const float DamageTime = .2f;
+    const float DamageTime = .5f;
 
     void Awake()
     {

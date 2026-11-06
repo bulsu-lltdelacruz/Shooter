@@ -23,6 +23,11 @@ public class MenuHandler : MonoBehaviour
     Slider sensitivitySlider;
     bool isTransitioning;
 
+    Button controlsButton;
+    Button backButton;
+    VisualElement controlsParent;
+    VisualElement menuParent;
+    [SerializeField]AudioSource bg;
     void Start()
     {
         root = menuDoc.rootVisualElement;
@@ -34,6 +39,13 @@ public class MenuHandler : MonoBehaviour
         continueButton = root.Q<Button>("continue-btn");
         pauselabel = root.Q<Label>("pause-label");
         sensitivitySlider = root.Q<Slider>("sensitivity-slider");
+
+
+        controlsButton = root.Q<Button>("control-btn");
+        backButton = root.Q<Button>("back");
+        controlsParent = root.Q<VisualElement>("control-parent");
+        menuParent = root.Q<VisualElement>("parent-parent");
+
         if (sensitivitySlider != null)
         {
             sensitivitySlider.SetValueWithoutNotify(PlayerPrefs.GetFloat(CameraHandler.SensitivityPrefKey, 1f));
@@ -54,10 +66,14 @@ public class MenuHandler : MonoBehaviour
         restartBtn.RegisterCallback<MouseOverEvent>(PlayHoverSound);
         quitButton.RegisterCallback<MouseOverEvent>(PlayHoverSound);
         continueButton.RegisterCallback<MouseOverEvent>(PlayHoverSound);
+        controlsButton.RegisterCallback<MouseOverEvent>(PlayHoverSound);
+        backButton.RegisterCallback<MouseOverEvent>(PlayHoverSound);
 
         restartBtn.RegisterCallback<ClickEvent>(OnRestart);
         quitButton.RegisterCallback<ClickEvent>(OnQuit);
         continueButton.RegisterCallback<ClickEvent>(OnContinue);
+        controlsButton.RegisterCallback<ClickEvent>(OnControls);
+        backButton.RegisterCallback<ClickEvent>(OnBack);
     }
 
     public void PlayHoverSound(MouseOverEvent e)
@@ -77,10 +93,22 @@ public class MenuHandler : MonoBehaviour
     }
     public void OnRestart(ClickEvent evt)
     {
-        if (isTransitioning) return; // prevent double clicks / clicking quit mid-fade
+        if (isTransitioning) return;
         isTransitioning = true;
         PlayClickSound();
         StartCoroutine(FadeAndLoad(SceneManager.GetActiveScene().name));
+    }
+    public void OnControls(ClickEvent evt)
+    {
+        PlayClickSound();
+        menuParent.style.display = DisplayStyle.None;
+        controlsParent.style.display = DisplayStyle.Flex;
+    }
+    public void OnBack(ClickEvent evt)
+    {
+        PlayClickSound();
+        menuParent.style.display = DisplayStyle.Flex;
+        controlsParent.style.display = DisplayStyle.None;
     }
 
     public void OnQuit(ClickEvent evt)
@@ -121,6 +149,7 @@ public class MenuHandler : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         UnityEngine.Cursor.visible = false;
         Time.timeScale = 1;
+        bg.Play();
     }
 
     public void Initialize(Player player, InputHandler playerInputs, UI_InputHandler uiInputs)
@@ -142,6 +171,7 @@ public class MenuHandler : MonoBehaviour
             UnityEngine.Cursor.lockState = CursorLockMode.None;
             UnityEngine.Cursor.visible = true;
             Time.timeScale = 0;
+            bg.Pause();
         }
         else
         {
@@ -151,6 +181,7 @@ public class MenuHandler : MonoBehaviour
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             UnityEngine.Cursor.visible = false;
             Time.timeScale = 1;
+            bg.Play();
         }
     }
 

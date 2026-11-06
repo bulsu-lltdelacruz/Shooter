@@ -103335,7 +103335,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.y
@@ -103347,7 +103347,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -9.25
+      value: -9.91
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -123492,7 +123492,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.y
@@ -123504,7 +123504,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -9.25
+      value: -9.91
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -130473,6 +130473,102 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &340832778
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 340832782}
+  - component: {fileID: 340832781}
+  - component: {fileID: 340832779}
+  - component: {fileID: 340832783}
+  m_Layer: 9
+  m_Name: GameFinishTrigger (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!54 &340832779
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340832778}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!64 &340832781
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340832778}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &340832782
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340832778}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -40.1, y: -12.776812, z: 87.23868}
+  m_LocalScale: {x: 20.473946, y: 1, z: 12.922748}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &340832783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340832778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e02d625d8b673b488edfa3df700203c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  player: {fileID: 554401382}
 --- !u!43 &345541673
 Mesh:
   m_ObjectHideFlags: 0
@@ -364956,8 +365052,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 554401380}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0048933052, y: 0.70708984, z: 0.0074355775, w: 0.70706767}
-  m_LocalPosition: {x: -85.05, y: 7.79, z: 79.46}
+  m_LocalRotation: {x: -0.0044546565, y: 0.74683654, z: 0.007706396, w: 0.66494817}
+  m_LocalPosition: {x: -85.04596, y: 7.79, z: 79.4395}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -364967,7 +365063,7 @@ Transform:
   - {fileID: 1757120946}
   - {fileID: 1668267359}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -0.999, y: 90, z: 0.206}
+  m_LocalEulerAnglesHint: {x: -0.999, y: 96.637, z: 0.206}
 --- !u!114 &554401382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -364981,7 +365077,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   parryPrefabs: {fileID: 0}
-  maxHP: 122222
+  maxHP: 120
   maxPoise: 100
   poiseRes: 0
   damageRes: 0
@@ -365367,6 +365463,7 @@ MonoBehaviour:
   menuDoc: {fileID: 680344249}
   quitSceneName: MainMenu
   fadeDuration: 1
+  bg: {fileID: 971691590}
 --- !u!43 &554822559
 Mesh:
   m_ObjectHideFlags: 0
@@ -372489,7 +372586,7 @@ Transform:
   m_GameObject: {fileID: 648497484}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 87.88, y: -12.776812, z: 87.23868}
+  m_LocalPosition: {x: 99.2, y: -12.776812, z: 87.23868}
   m_LocalScale: {x: 6.8536577, y: 1, z: 14.999764}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -401673,7 +401770,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 01e74af9c0527c344b2e9139882c2b12, type: 2}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.y
@@ -401685,7 +401782,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.59
+      value: -8.25
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -401976,7 +402073,7 @@ PrefabInstance:
       propertyPath: text
       value: "You can use the a Fire Spell [RMB+LMB] to temporarily fry an enemy's
         poise, \nmaking it take much more poise damage, but can only be used every
-        3 enemy killed.\n(Charge is shown on the bottom right)"
+        3 enemy killed.\n(Charge is shown on the bottom left)"
       objectReference: {fileID: 0}
     - target: {fileID: 8623221639748033634, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: timeShown
@@ -422817,7 +422914,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &971691590
 AudioSource:
   m_ObjectHideFlags: 0
@@ -422829,7 +422926,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 4511055692351509291, guid: 0b811459022764e4a897f51f83bd301f, type: 2}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: b5944400512926d4aad2831b2f721ce5, type: 3}
+  m_Resource: {fileID: 8300000, guid: bb371258135cfcc49bb274a8e03da167, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -458732,6 +458829,8 @@ MonoBehaviour:
   interactableType: 2
   doorConnected: {fileID: 1039802037}
   doc: {fileID: 1643122615}
+  correctSound: {fileID: 8300000, guid: 0cb123db34d190a44a6d4286e5556974, type: 3}
+  wrongSound: {fileID: 8300000, guid: 9291b49595d3f154d90c747c306ff05a, type: 3}
 --- !u!1001 &1128064513
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -459139,7 +459238,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 430e8d4804e01f24895cc8ba4c70aa67, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: ec3ca2b64fb09994b845bc77ecb2da5b, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
@@ -477592,7 +477691,7 @@ PrefabInstance:
     - target: {fileID: 4128796649438000375, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 387243618}
+      objectReference: {fileID: 2010008906}
     - target: {fileID: 6218305551722715864, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: m_Name
       value: Guide (4)
@@ -477604,6 +477703,7 @@ PrefabInstance:
     - target: {fileID: 8623221639748033634, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: text
       value: The shotgun deals lethal HP damage, but does little to no poise damage.
+        Press [2] to switch
       objectReference: {fileID: 0}
     - target: {fileID: 8623221639748033634, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: timeShown
@@ -493670,7 +493770,7 @@ PrefabInstance:
     - target: {fileID: 8623221639748033634, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: text
       value: The Crossbow deals high HP damage and extreme poise damage, but has
-        low bullet count.
+        low bullet count. Press [3] to switch
       objectReference: {fileID: 0}
     - target: {fileID: 8623221639748033634, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: timeShown
@@ -547249,7 +547349,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 01e74af9c0527c344b2e9139882c2b12, type: 2}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.y
@@ -547261,7 +547361,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -9.245
+      value: -9.905
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -572356,7 +572456,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 01e74af9c0527c344b2e9139882c2b12, type: 2}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.y
@@ -572368,7 +572468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -9.245
+      value: -9.905
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -575531,7 +575631,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.y
@@ -575543,7 +575643,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -9.25
+      value: -9.91
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -669329,7 +669429,7 @@ PrefabInstance:
     - target: {fileID: 8623221639748033634, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: text
       value: The Handgun deals low health damage and poise damage, but has plenty
-        of bullets.
+        of bullets. Press [1] to switch
       objectReference: {fileID: 0}
     - target: {fileID: 8623221639748033634, guid: 8e73cb1eed9503049bb676e7f9f114a2, type: 3}
       propertyPath: timeShown
@@ -683264,7 +683364,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 01e74af9c0527c344b2e9139882c2b12, type: 2}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalScale.y
@@ -683276,7 +683376,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.59
+      value: -8.25
       objectReference: {fileID: 0}
     - target: {fileID: 8792704465261103210, guid: 9173dd1ba578ffc4e920b65472e7e56b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -693425,6 +693525,7 @@ SceneRoots:
   - {fileID: 335005599}
   - {fileID: 1629156990}
   - {fileID: 648497485}
+  - {fileID: 340832782}
   - {fileID: 192541504}
   - {fileID: 832575519}
   - {fileID: 554401381}

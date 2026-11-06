@@ -7,6 +7,8 @@ public class Terminal : Interactable
     KeyType[] completeArray = { KeyType.red, KeyType.blue, KeyType.yellow};
     [SerializeField] FinalDoor doorConnected;
     [SerializeField]UIDocument doc;
+    [SerializeField] AudioClip correctSound;
+    [SerializeField] AudioClip wrongSound;
     VisualElement bg;
     VisualElement keys;
     Label result;
@@ -30,6 +32,7 @@ public class Terminal : Interactable
             bg.AddToClassList("green");
             result.text = "SUCCESS";
             ShowDisplayForTime();
+            SoundFXManager.instance.PlaySoundFXClip(correctSound, transform, 1, SoundType.SOUNDFX);
         }
         else
         {
@@ -37,6 +40,7 @@ public class Terminal : Interactable
             bg.AddToClassList("red");
             result.text = "DENIED";
             ShowDisplayForTime();
+            SoundFXManager.instance.PlaySoundFXClip(wrongSound, transform, 1, SoundType.SOUNDFX);
         }
     }
     private void ShowDisplayForTime()
