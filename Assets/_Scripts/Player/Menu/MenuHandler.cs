@@ -176,6 +176,9 @@ public class MenuHandler : MonoBehaviour
         else
         {
             parent.style.display = DisplayStyle.None;
+            menuParent.style.display = DisplayStyle.Flex;
+            controlsParent.style.display = DisplayStyle.None;
+
             playerInputs.SetEnabled(true);
             uiInputs.SetEnabled(false);
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;

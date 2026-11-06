@@ -100,7 +100,7 @@ public class BeamHelper : MonoBehaviour, IDamageable
         if (damageable == null || entitiesInRange.Contains(damageable))
             return;
 
-        damageable.TakeDamage(10, transform.position, transform.forward);
+        damageable.TakeDamage(20, transform.position, transform.forward);
 
         entitiesInRange.Add(damageable);
         Explode();
