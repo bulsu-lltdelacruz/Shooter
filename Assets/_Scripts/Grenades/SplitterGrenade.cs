@@ -4,6 +4,9 @@ public class SplitterGrenade : BaseGrenade, IDamageable
 {
     [SerializeField] private int reboundCount;
     private bool hasBeenHit = false;
+
+    public EffectController effectController => throw new System.NotImplementedException();
+
     public void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
     {
         if (hasBeenHit)
@@ -67,5 +70,15 @@ public class SplitterGrenade : BaseGrenade, IDamageable
     public void AddForce(Vector3 direction, float forceAmount)
     {
 
+    }
+
+    public GameObject GetParryPrefab()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void TakeDamageWithImpact(Vector3 source, DamageType damageType, Vector3 hitPoint, Quaternion hitRotation)
+    {
+        throw new System.NotImplementedException();
     }
 }

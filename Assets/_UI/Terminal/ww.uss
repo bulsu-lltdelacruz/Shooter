@@ -1,0 +1,26 @@
+:root {
+}
+
+.labell {
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("project://database/Packages/com.unity.render-pipelines.core/Runtime/Debugging/Prefabs/Fonts/PerfectDOSVGA437.ttf?fileID=12800000&guid=74a5091d8707f334b9a5c31ef71a64ba&type=3#PerfectDOSVGA437");
+    font-size: 141px;
+    -unity-text-align: middle-center;
+}
+
+.green {
+    background-color: rgba(14, 144, 0, 0.58);
+}
+
+.red {
+    background-color: rgb(197, 29, 29);
+}
+
+.key {
+    width: 97px;
+    flex-grow: 0;
+    height: 354px;
+    max-width: 97px;
+    margin-left: 20px;
+    margin-right: 20px;
+}

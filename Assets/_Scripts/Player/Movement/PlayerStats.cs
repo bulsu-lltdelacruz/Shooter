@@ -1,5 +1,5 @@
 using System;
-using UnityEditor.UIElements;
+//using UnityEditor.UIElements;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
@@ -26,7 +26,7 @@ public class PlayerStats : MonoBehaviour
     private Vector3 verticalVelocity;
 
     public int jumpCounter;
-    int maxJumps = 2;
+    //int maxJumps = 1;
     [Header("Advanced Movements")]
     [Header("Dash")]
     [SerializeField] public float dashSpeed;
@@ -56,7 +56,7 @@ public class PlayerStats : MonoBehaviour
     {
         player = GetComponent<Player>();
         characterController = GetComponent<CharacterController>();
-        jumpCounter = maxJumps;
+        jumpCounter = PlayerStatus.Instance.maxJumps;
     }
 
     void Update()
@@ -157,7 +157,7 @@ public class PlayerStats : MonoBehaviour
         if (PlayerStatus.Instance.isGrounded)
         {
             deltaGravityAmount = 0;
-            jumpCounter = maxJumps;
+           // jumpCounter = maxJumps;
         }
         if (PlayerStatus.Instance.isJumping)
             return;

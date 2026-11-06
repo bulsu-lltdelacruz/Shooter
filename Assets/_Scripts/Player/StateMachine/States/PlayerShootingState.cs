@@ -10,7 +10,7 @@ public class PlayerShootingState : PlayerState
         Animator gunAnimator) : 
         base(player, playerStateMachine, armAnimator, gunAnimator)
     {
-        base.baseCooldown = .25f;
+        base.baseCooldown = .05f;
     }
     public override void EnterState()
     {

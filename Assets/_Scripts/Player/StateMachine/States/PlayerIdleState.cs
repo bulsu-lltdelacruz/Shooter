@@ -52,10 +52,12 @@ public class PlayerIdleState : PlayerState
 
     public override void ExitState()
     {
-        ClearIdle();
+        if (player.playerStateMachine.nextState is PlayerChargingAltFireState)
+            return;
+            ClearIdle();
     }
 
-    private void ClearIdle()
+    public void ClearIdle()
     {
         if (!isIdle) return;
 

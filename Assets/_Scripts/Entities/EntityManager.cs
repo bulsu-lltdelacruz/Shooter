@@ -14,7 +14,6 @@ public class EntityManager : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("instance awawke");
         if(Instance == null)
             Instance = this;
         if(enemyEntities == null)
@@ -38,7 +37,6 @@ public class EntityManager : MonoBehaviour
     public void RegisterEnemy(GameObject enemyObj)
     {
         enemyEntities.Add(enemyObj, enemyObj.GetComponent<IDamageable>());
-        Debug.Log("registered : " + enemyObj.name);
     }
     public void UnRegisterEnemy(GameObject enemyObj)
     {

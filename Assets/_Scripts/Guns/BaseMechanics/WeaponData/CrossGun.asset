@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   weaponName: Cross
   weaponType: 3
-  damageType: 0
+  damageType: 3
   icon: {fileID: -1008301579157283121, guid: 1c02df6dba34f74419d2698b8c45458e, type: 3}
   fireMode: 0
   fireRate: 0.25
   burstCount: 3
   burstShotDelay: 0.08
-  damagePerPellet: 55
-  poiseDamagePerPellet: 5
+  damagePerPellet: 45
+  poiseDamagePerPellet: 30
   pushForce: 5
   range: 100
   hitMask:
@@ -30,11 +30,11 @@ MonoBehaviour:
   bulletSpread: 0
   bulletStartSpread: 0
   pelletsPerShot: 1
-  maxBulletCount: 999
+  maxBulletCount: 5
   reloadTime: 1.542
   projectilePrefab: {fileID: 0}
   projectileSpeed: 60
   muzzleFlashPrefab: {fileID: 0}
   impactEffectPrefab: {fileID: 0}
-  fireSound: {fileID: 0}
+  fireSound: {fileID: 8300000, guid: 42cd418f7272aa248857d2446a813cef, type: 3}
   emptySound: {fileID: 0}

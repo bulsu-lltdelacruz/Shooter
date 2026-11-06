@@ -28,23 +28,24 @@ public class BasicEnemy : Enemy
 
         originalExcludeLayers = controller.excludeLayers;
         originalIncludeLayers = controller.includeLayers;
-        //Add events on top of the base event form enemy that propagates to entity
     }
     private void OnEnable()
     {
         OnEnableBase();
         OnStunEvt += OnStun;
+        OnParryEvt += OnParry;
     }
     private void OnDisable()
     {
         OnDisableeBase();
         OnStunEvt -= OnStun;
+        OnParryEvt -= OnParry;
     }
-
 
     public override void Attack(E_AttackType attackType, Vector3 target)
     {
-        Debug.Log("FI(CK");
+        if (IsPatrolling)
+            return;
         if (isAttacking == true) // dont do shit if already attacking
             return;
 
@@ -53,7 +54,7 @@ public class BasicEnemy : Enemy
         StartAttacking();
 
         attckCollider.SetActive(true);
-        if(controller == null) 
+        if (controller == null)
             Debug.Log("wawawa");
         controller.excludeLayers = originalExcludeLayers | playerLayerMask;
 
@@ -64,15 +65,15 @@ public class BasicEnemy : Enemy
         currentDashDirection = target - transform.position;
         currentDashDirection.Normalize();
         currentDashDirection.y = 0;
-      //  FaceDirection(currentDashDirection);
-         Vector3 faceDirection = new Vector3(currentDashDirection.x, 0, currentDashDirection.z);
-         transform.rotation = Quaternion.LookRotation(faceDirection);
-         StartParryWindow();
+        //  FaceDirection(currentDashDirection);
+        Vector3 faceDirection = new Vector3(currentDashDirection.x, 0, currentDashDirection.z);
+        transform.rotation = Quaternion.LookRotation(faceDirection);
+        StartParryWindow();
     }
-    
+
     public void DamageEnemy(IDamageable playerDamageable)
     {
-        playerDamageable.TakeDamage(10, transform.position, transform.forward);
+        playerDamageable.TakeDamage(13, transform.position, transform.forward);
     }
     private void UpdateAttack()
     {
@@ -106,14 +107,25 @@ public class BasicEnemy : Enemy
     }
     private void Update()
     {
+        if (IsPatrolling)
+        {
+            base.UpdatePatrol();
+            return;
+        }
         if (isStunned)
         {
+            Debug.Log("SUENNDFDFSFDF}DS{FDS}|F{F|}");
             CountDownStun();
             return;
         }
+        if (isParried)
+        {
+            CountDownParried();
+            return;
+        }
         base.FrameUpdate2();
-       // Debug.Log(isInAttackDelay);
-        if(isInParryWindow)
+        // Debug.Log(isInAttackDelay);
+        if (isInParryWindow)
         {
             return;
         }
@@ -128,7 +140,13 @@ public class BasicEnemy : Enemy
     {
         animator.SetBool("IsAttacking", false);
         animator.SetBool("IsRunning", false);
-        animator.SetBool("IsIdle", false); 
+        animator.SetBool("IsIdle", false);
+    }
+    public void OnParry()
+    {
+        animator.SetBool("IsAttacking", false);
+        animator.SetBool("IsRunning", false);
+        animator.SetBool("IsIdle", false);
     }
     private void OnRemoveStun()
     {

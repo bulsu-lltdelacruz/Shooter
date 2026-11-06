@@ -10,6 +10,10 @@ public class PlayerSounds : MonoBehaviour
     [SerializeField] public AudioClip shotgun_cock;
     [SerializeField] public AudioClip shotgun_reload2;
     [SerializeField] public AudioClip hit_sound;
+    [SerializeField] public AudioClip dash_sound;
+    [SerializeField] public AudioClip menu_hover;
+    [SerializeField] public AudioClip menu_click;
+    [SerializeField] public AudioClip punch;
     public static PlayerSounds Instance;
     private void Start()
     {

@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 using static InputActions_Player;
 using static PlayerStateController;
-using static UnityEditor.Progress;
+//using static UnityEditor.Progress;
 public class InputHandler : IPlayerActions
 {
     Player player;
@@ -11,13 +13,16 @@ public class InputHandler : IPlayerActions
     public Vector2 mousePosition;
     public Vector2 moveDirection;
     LayerMask interactMask;
-    public InputHandler(Player player)
+    MenuHandler menuHandler;
+    public InputHandler(Player player, MenuHandler menuHandler)
     {
         inputActions = new InputActions_Player();
         playerActions = inputActions.Player;
         playerActions.SetCallbacks(this);
         playerActions.Enable();
         interactMask = LayerMask.GetMask("Weapon", "Interactable", "Door");
+        this.menuHandler = menuHandler;
+        //parent = pauseMenu.rootVisualElement.Q<VisualElement>("menu-parent");
         this.player = player;
     }
     public InputActions_Player GetInputActions()
@@ -69,16 +74,34 @@ public class InputHandler : IPlayerActions
             if (item.TryGetComponent<Interactable>(out Interactable interactable))
             {
                 type = interactable.interactableType;
+            } else
+            {
+                if (hit.collider.CompareTag("Door")&& hit.distance <= 1.1f)
+                {
+                    HintDamageManager.Instance.ShowHint("Door does not open from this side");
+                }
+                if (hit.collider.CompareTag("FinalDoor") && hit.distance <= 1.1f)
+                {
+                    HintDamageManager.Instance.ShowHint("Door unlocks with a mechanism");
+                }
             }
             switch (type)
             {
                 case ItemType.Weapon:
-                        WeaponInteractable weapInteractable = item.GetComponent<WeaponInteractable>();
-                        player.playerInventory.AddToSlot(weapInteractable.prefab.GetComponent<BaseWeaponClass>());
+                    WeaponInteractable weapInteractable = item.GetComponent<WeaponInteractable>();
+                    player.playerInventory.AddToSlot(weapInteractable.prefab.GetComponent<BaseWeaponClass>());
                     break;
                 case ItemType.Door:
-                    if(hit.distance <= 1.1f)
-                    item.GetComponent<Door>().OpenDoor();
+                    if (hit.distance <= 1.5f)
+                        item.GetComponent<Door>().OpenDoor();
+                    break;
+                case ItemType.Terminal:
+                    if (hit.distance <= 1.5f)
+                        item.GetComponent<Terminal>().Interact();
+                    break;
+                case ItemType.Guide:
+                    if (hit.distance <= 2f)
+                        item.GetComponent<Guide>().ShowText();
                     break;
                 case ItemType.None:
                     break;
@@ -93,25 +116,26 @@ public class InputHandler : IPlayerActions
         if (!context.canceled && player.AllowJump())
         {
             PlayerStatus.Instance.isJumping = true;//can only be made false by PlayerMovement
-            player.playerWalkingState.ResetJump();
+            //player.playerWalkingState.ResetJump();
             player.playerWalkingState.jumpCounter--;
         }
 
     }
+    public float dashCooldown = 1f;
+    float lastDashTime = -Mathf.Infinity;
     public void OnDash(InputAction.CallbackContext context)
     {
-        if (!context.canceled)
-        {
-            //cooldownhandler
-            //PlayerStatus.Instance.isDashing = true;
-            player.PlayerStateController.TryChangeState(E_PlayerMovementStates.DASH);
-        }
+        if (context.canceled) return;
+        if (Time.time < lastDashTime + dashCooldown) return;
+
+        lastDashTime = Time.time;
+        player.PlayerStateController.TryChangeState(E_PlayerMovementStates.DASH);
     }
     public void OnSlam(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            player.PlayerStateController.TryChangeState(E_PlayerMovementStates.SLAM);
+           // player.PlayerStateController.TryChangeState(E_PlayerMovementStates.SLAM);
         }
     }
     public void OnGrapple(InputAction.CallbackContext context)
@@ -176,7 +200,11 @@ public class InputHandler : IPlayerActions
             Debug.LogError("No Control Binding for "+context);
             return;
         }
-        player.playerSwitchingState.SetWeaponSlot(int.Parse(control.name));
+        int slot = int.Parse(control.name);
+        player.playerSwitchingState.SetWeaponSlot(slot);
+        Debug.Log(player.playerInventory.CheckSlotExist(slot));//fix reload earlier ma relaod
+        if(!player.playerSwitchingState.CheckCanSwitch(slot) || !player.playerInventory.CheckSlotExist(slot))
+            return;
         player.PlayerStateController.TryChangeState(E_PlayerStates.SWITCH);
         player.weaponController.DecreaseBulletCount(0);//just to update
         
@@ -186,10 +214,13 @@ public class InputHandler : IPlayerActions
     {
         if (context.performed)
         {
-            player.playerLeftThrowState.SetSlot(context.control.name);
-            player.PlayerStateController.TryChangeState(E_PlayerLeftStates.THROW);
+           // player.playerLeftThrowState.SetSlot(context.control.name);
+           // player.PlayerStateController.TryChangeState(E_PlayerLeftStates.THROW);
         }
     }
 
-    
+    public void OnOnPause(InputAction.CallbackContext context)
+    {
+        menuHandler.SetPauseVisible(true);
+    }
 }

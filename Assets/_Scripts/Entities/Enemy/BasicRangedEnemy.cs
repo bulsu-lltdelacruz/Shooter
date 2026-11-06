@@ -2,42 +2,63 @@ using UnityEngine;
 
 public class BasicRangedEnemy : Enemy
 {
+    [Header("Beam")]
+    [SerializeField] private GameObject beamPrefab;
     [SerializeField] private float beamDistance = 5f;
     [SerializeField] private float beamSpeed = 20f;
-    private Vector3 playerLastPosition;
-    //[SerializeField] CapsuleCollider enemyCollider;
-    //[SerializeField] GameObject attckCollider;
+    [Tooltip("Where the beam spawns. If empty, uses this transform + Fire Height.")]
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private float fireHeight = 1f;
+    [Tooltip("Only used if the player has no collider to aim at.")]
+    [SerializeField] private float fallbackAimHeight = 1f;
 
-    private float deltaDistance;
-    private Vector3 currentDashDirection;
+    private float attackTimer;
+    private Collider playerCollider;
 
-    [SerializeField]GameObject beamPrefab;
-    Transform currentBeam;
-    CharacterController controller;
     private void Start()
     {
         StartBase();
-        controller = GetComponent<CharacterController>();
         animator.SetBool("IsRunning", true);
 
-        int playerLayerIndex = LayerMask.NameToLayer("Player");
         playerTransform = EntityManager.Instance.GetPlayerObject().transform;
+        playerCollider = playerTransform.GetComponentInChildren<Collider>();
+    }
+
+    private void OnEnable()
+    {
+        OnEnableBase();
+    }
+
+    private void OnDisable()
+    {
+        OnDisableeBase();
     }
 
     public override void Attack(E_AttackType attackType, Vector3 target)
     {
-        if (isAttacking == true) // dont do shit if already attacking
+        if (isAttacking || isStunned || isParried) // don't fire while already attacking or stunned
             return;
 
         if (!CheckCooldownFinished())
             return;
-        FaceDirection(playerTransform.position);
-        currentBeam = ObjectPoolManager.SpawnObject(beamPrefab, transform.position,
-                transform.rotation,
-                ObjectPoolManager.PoolType.GameObjects).transform;
-        currentBeam.GetComponent<BeamHelper>().parent = gameObject;
-        playerLastPosition = target;
 
+        FaceDirection(playerTransform.position);
+
+        // Aim in 3D (the enemy's own rotation is flattened, so don't use transform.forward for the beam)
+        Vector3 origin = GetFireOrigin();
+        Vector3 aimDir = GetAimPoint(target) - origin;
+        aimDir = aimDir.sqrMagnitude > 0.0001f ? aimDir.normalized : transform.forward;
+
+        GameObject beamObj = ObjectPoolManager.SpawnObject(
+            beamPrefab,
+            origin,
+            Quaternion.LookRotation(aimDir),
+            ObjectPoolManager.PoolType.GameObjects);
+
+        // The beam moves and despawns itself from here on, independent of this enemy
+        beamObj.GetComponent<BeamHelper>().Launch(gameObject, beamSpeed, beamDistance);
+
+        attackTimer = 0f;
         StartAttacking();
     }
 
@@ -46,36 +67,58 @@ public class BasicRangedEnemy : Enemy
         playerDamageable.TakeDamage(2, transform.position, transform.forward);
         StopAttack();
     }
-    private void UpdateAttack()
-    {
-        float deltaTime = Time.deltaTime;
-        currentBeam.position += currentBeam.forward * beamSpeed * deltaTime;
-        //controller.Move(currentDashDirection * dashSpeed * deltaTime);
-        deltaDistance += beamSpeed * deltaTime;
-
-        if (deltaDistance > beamDistance)
-        {
-            StopAttack();
-        }
-    }
 
     public override void StopAttack()
     {
         EndAttacking();
-        //attckCollider.SetActive(false);
-        deltaDistance = 0;
-       // ObjectPoolManager.ReturnObjectToPool(currentBeam.gameObject);
-        currentBeam = null;
+        attackTimer = 0f;
     }
+
+    private Vector3 GetFireOrigin()
+    {
+        return firePoint != null ? firePoint.position : transform.position + Vector3.up * fireHeight;
+    }
+
+    private Vector3 GetAimPoint(Vector3 target)
+    {
+        if (playerCollider != null)
+            return playerCollider.bounds.center;
+        return target + Vector3.up * fallbackAimHeight;
+    }
+
     private void Update()
     {
+        if (IsPatrolling)
+        {
+            base.UpdatePatrol();
+            return;
+        }
+
+        // Tick stun/parry recovery (previously nothing in this class did, so the enemy stayed stunned)
+        if (isStunned)
+        {
+            CountDownStun();
+            return;
+        }
+        if (isParried)
+        {
+            CountDownParried();
+            return;
+        }
+
         base.FrameUpdate2();
 
         Attack(E_AttackType.ATTACK_1, playerTransform.position);
+
+        // The enemy only "holds" its attack pose for as long as the beam takes to travel its range.
+        // The beam itself no longer depends on this.
         if (isAttacking)
         {
-            UpdateAttack();
+            attackTimer += Time.deltaTime;
+            if (attackTimer >= beamDistance / Mathf.Max(beamSpeed, 0.01f))
+            {
+                StopAttack();
+            }
         }
-
     }
 }

@@ -5,6 +5,7 @@ public class PlayerChargingAltFireState : PlayerState
     Transform cameraTransform;
     LayerMask mask;
     PlayerStateController playerStateController;
+    public string prevarmAnimTrigger;
     public PlayerChargingAltFireState(
         Player player,
         PlayerStateMachine playerStateMachine,
@@ -24,13 +25,14 @@ public class PlayerChargingAltFireState : PlayerState
     public override void ExitState()
     {
         gunAnimator = player.gunAnimator;
+        player.playerIdleState.ClearIdle();
     }
     public override void FrameUpdate()
     {
         if (!playerStateController.isChargingAltFire)
             player.PlayerStateController.TryChangeState(E_PlayerStates.IDLE);
 
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, 999, mask ))
+        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, 10, mask ))
         {
             player.playerDashMeleeState.UpdateLockedOnTarget(hit.collider.gameObject);
         }

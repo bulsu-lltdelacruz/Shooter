@@ -34,7 +34,7 @@ public class DashAI : MonoBehaviour
         if (Time.time < nextCheckTime)
             return;
         float random = Random.Range(0, 1f);
-        if (random > .30f)
+        if (random > .7f)
             return;
         nextCheckTime = Time.time + checkInterval;
 

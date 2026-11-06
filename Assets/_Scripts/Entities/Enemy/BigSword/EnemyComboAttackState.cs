@@ -19,6 +19,7 @@ public class EnemyComboAttackState
     public string currentCooldownStateForDebugging;
     int previousStepIndex = 0;
     private bool CanAttack = true;
+    string currentAttack;
     public EnemyComboAttackState(Enemy enemy, Animator animator, ComboSequenceSO combo)
     {
         this.enemy = enemy;
@@ -106,11 +107,12 @@ public class EnemyComboAttackState
         var previousStep = combo.steps[previousStepIndex];
         animator.SetBool(previousStep.animTrigger, false);
         animator.SetBool(step.animTrigger, true);
-
+        currentAttack = step.animTrigger;
         previousStepIndex = stepIndex;
         phase = Phase.Startup;
         timer = step.startupTime;
     }
+
 
     public void UpdateState()
     {
@@ -125,7 +127,7 @@ public class EnemyComboAttackState
         var step = combo.steps[stepIndex];
         currentComboNameForDebugging = step.name;
         currentComboNameForDebugging = CanAttack.ToString();
-    timer -= Time.deltaTime;
+        timer -= Time.deltaTime;
         switch (phase)
         {
             case Phase.Startup:

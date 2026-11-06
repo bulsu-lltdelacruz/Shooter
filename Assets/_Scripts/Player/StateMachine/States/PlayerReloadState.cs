@@ -26,6 +26,7 @@ public class PlayerReloadState : PlayerState
         deltaTime = 0;
         gunAnimator = player.gunAnimator;
         gunAnimator.ResetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.GUN_reloadTrigger);
+        gunAnimator.SetBool("Idle", true);
         armAnimator.ResetTrigger(player.playerInventory.activeSlot.activeItem.weaponClass.ARM_reloadTrigger);
         //gunAnimator.ResetTrigger("GunReload1");
         //armAnimator.ResetTrigger("ArmReload1");
@@ -33,15 +34,19 @@ public class PlayerReloadState : PlayerState
     public override void FrameUpdate()
     {
         deltaTime += Time.deltaTime;
-        if (deltaTime > baseCooldown)
+        if (deltaTime >= baseCooldown *.7f)
         {
             player.playerInventory.activeSlot.activeItem.weaponClass.canShoot = true;
-            deltaTime = 0f;
         }
-        if(player.playerInventory.activeSlot.activeItem.weaponClass.canShoot)
+        if (deltaTime >= baseCooldown)
         {
+            deltaTime = 0f; 
             player.PlayerStateController.TryChangeState(E_PlayerStates.IDLE);
         }
+        /*if (player.playerInventory.activeSlot.activeItem.weaponClass.canShoot)
+        {
+            player.PlayerStateController.TryChangeState(E_PlayerStates.IDLE);
+        }*/
     }
     public override void PhysUpdate()
     {

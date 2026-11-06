@@ -3,6 +3,8 @@ public enum ItemType
 {
     Weapon,
     Door,
+    Terminal,
+    Guide,
     None
 }
 public class Interactable : MonoBehaviour

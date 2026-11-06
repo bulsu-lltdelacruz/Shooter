@@ -11,6 +11,7 @@ TagManager:
   - Projectile
   - PickUp
   - Door
+  - FinalDoor
   layers:
   - Default
   - TransparentFX
@@ -31,8 +32,8 @@ TagManager:
   - Detector
   - temp
   - Door
-  - 
-  - 
+  - Particle
+  - Ladder
   - 
   - 
   - 

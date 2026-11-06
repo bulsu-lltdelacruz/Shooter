@@ -7,6 +7,8 @@ using static UnityEngine.Rendering.DebugUI.MessageBox;
 
 public class Player : Entity
 {
+    [SerializeField] public MenuHandler menuHandler;
+    [NonSerialized]public PsuedoInventory keyInventory;
     InputHandler playerInputs;
     UI_InputHandler uiInputs;
     public CameraHandler cameraHandler;
@@ -33,6 +35,7 @@ public class Player : Entity
     public PlayerMeleeState playerMeleeState;
     public PlayerChargingAltFireState playerChargingAltFireState;
     public PlayerDashMeleeState playerDashMeleeState;
+    PlayerSpellState playerSpellState;
     public float SPACEDFDF = 0;
     //locmotion states
 
@@ -58,12 +61,15 @@ public class Player : Entity
     #region UI DOCS
     [SerializeField] private UIDocument HUDDoc;
     private VisualElement HPBar;
+    [SerializeField] public GameObject leftHand;
+    public PlayerPrefabs playerPrefabs;
     #endregion
     private void Awake()
     {
         EntityManager.Instance.RegisterPlayer(gameObject, GetComponent<IDamageable>());
-        playerInputs = new InputHandler(this);
-        uiInputs = new(this, playerInputs.GetInputActions());
+        playerInputs = new InputHandler(this, menuHandler);
+        uiInputs = new(this, playerInputs.GetInputActions(), menuHandler);
+        menuHandler.Initialize(this, playerInputs, uiInputs);
         playerInventory = GetComponent<PlayerInventory>();
         uiHandler = new(playerInventory.inventoryTablet, playerInputs, uiInputs, this);
         cameraHandler = GetComponent<CameraHandler>();
@@ -73,9 +79,16 @@ public class Player : Entity
         animationEventBus = GetComponent<AnimationEventBus>();
         weaponController = GetComponent<WeaponController>();
         grenadeController = GetComponent<GrenadeController>();
+        playerPrefabs = GetComponent<PlayerPrefabs>();
     }
+    /*
+     
+     ENCOURAGE SWITCHING EAPNS< HITTING WIHT SAME WEAPON TOO MANY TIMES WILL CAUSAE DECREASED DAMAGE
+     ALSO MAKE IT SO YOU CAN APPLY EFFECTS BASED ON WHAT HIT IN A SEQUENCE
+     */
     void Start()
     {
+        keyInventory = GetComponent<PsuedoInventory>();
         //states
         playerStateMachine = new();
         playerLocomotionStateMachine = new();
@@ -91,6 +104,7 @@ public class Player : Entity
         playerMeleeState = new(this, playerStateMachine, armAnimator, gunAnimator);
         playerDashMeleeState = new(this, playerStateMachine, armAnimator, gunAnimator);
         playerChargingAltFireState = new(this, playerStateMachine, armAnimator, gunAnimator);
+        playerSpellState = new(this, playerStateMachine, armAnimator, gunAnimator);
         //locomotion states
         playerWalkingState = new(this, playerStateMachine, playerInputs, armAnimator, gunAnimator);
         playerDashingState = new(this, playerStateMachine, playerInputs, armAnimator, gunAnimator);
@@ -113,7 +127,7 @@ public class Player : Entity
             playerWalkingState,
             playerDashingState,
             playerSlamState,
-            playerGrappleState);
+            playerGrappleState, playerSpellState);
         PlayerStateController.InitializeLeftStates(leftStateMachine, playerLeftIdleState, playerLeftThrowState);
 
         playerInventory.Initialize();
@@ -121,6 +135,7 @@ public class Player : Entity
         playerLocomotionStateMachine.Initialize(playerWalkingState);
         leftStateMachine.Initialize(playerLeftIdleState);
         grenadeController.Initialize(this);
+        keyInventory.Initialize(HUDDoc);
         #endregion STATE MACHINES
 
         #region SET INSTANCES
@@ -138,6 +153,7 @@ public class Player : Entity
         leftStateMachine.currentState.FrameUpdate();
         //Debug.Log("" + playerStateMachine.currentState);
         PlayerStateController.CheckContinuousInputs();
+        Debug.Log(playerStateMachine.currentState);
     }
     private void FixedUpdate()
     {
@@ -155,22 +171,23 @@ public class Player : Entity
     }
     public override void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
     {
+        Debug.Log($"HIT for {amount} on frame {Time.frameCount}\n{System.Environment.StackTrace}");
+        // HintDamageManager.Instance.ShowDamage();
         //Debug.Log("Damaged with " + amount +" ugh ouchies");
-        Debug.Log("ARAY, "+amount);
         currentHP = Mathf.Max(0, currentHP-=amount);
         float hpPercent = (currentHP / maxHP) * 100;
-        SoundFXManager.instance.PlaySoundFXClip(PlayerSounds.Instance.hit_sound, transform, .3f, SoundType.SOUNDFX);
+        SoundFXManager.instance.PlaySoundFXClip(PlayerSounds.Instance.hit_sound, transform, 1f, SoundType.SOUNDFX);
         HPBar.style.width = Length.Percent(hpPercent* 0.9583f);//kasi di mas maliit sa loob 
         if (currentHP <=0)
         {
             Debug.Log("Die");
-            UnityEditor.EditorApplication.isPlaying = false;
+            menuHandler.SetGameOverVisible(true, "Game Over");
+            //UnityEditor.EditorApplication.isPlaying = false;
         }
     }
     public override void Heal(float healAmount)
     {
         currentHP = Mathf.Clamp(currentHP + healAmount, 0, maxHP);
-        Debug.Log($"{currentHP} from {healAmount} amount of healing");
         float hpPercent = (currentHP / maxHP) * 100;
         HPBar.style.width = Length.Percent(hpPercent* 0.9583f);//kasi di mas maliit sa loob 
     }

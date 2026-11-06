@@ -1,10 +1,11 @@
-using UnityEngine;
+    using UnityEngine;
 
 public class Door : Interactable
 {
     [SerializeField] Vector3 direction;
     [SerializeField]float speed;
     [SerializeField] Transform targetTransform;
+    [SerializeField] AudioClip sound;
     float deltaPosition;
 
     float targetDistance;
@@ -25,6 +26,7 @@ public class Door : Interactable
     public void OpenDoor()
     {
         isOpening = true;
+        SoundFXManager.instance.PlaySoundFXClip(sound, transform, 1, SoundType.SOUNDFX);
     }
     private void Update()
     {

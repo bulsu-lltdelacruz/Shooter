@@ -8,7 +8,7 @@ public class LocoPlayerWalkingState : PlayerState
     InputHandler playerInputs;
     float moveSpeed;
     float horizontalSpeedMultiplier = 0.75f;
-    float sprintMultiplier; 
+    float sprintMultiplier;
     //gravity
     float gravityAcceleration;
     float maxGravityAmount;
@@ -55,6 +55,15 @@ public class LocoPlayerWalkingState : PlayerState
     private bool hasTouchedGroundAfterTouchingWall;
     private Vector3 velocity;
     public Vector3 currentVelocity;
+
+    //fall damage
+        private float airTime;
+    private float minAirTimeForFallDamage = .6f;
+    private float fallDamagePerSecond = 20f;
+    private float fallDamageBase = 12f;
+    private float fallDamageGrowth = 500000f;
+
+    
 
     //int leftArmLayerIndex = 0;
     private float footstepInterval = .4f;
@@ -125,24 +134,56 @@ public class LocoPlayerWalkingState : PlayerState
                 break;
         }
     }
+    private void TakeFallDamage(float airTimeSeconds)
+    {
+        if (airTimeSeconds <= minAirTimeForFallDamage)
+            return;
+
+        float excessTime = airTimeSeconds - minAirTimeForFallDamage;
+        float damageAmount = fallDamageBase * (Mathf.Pow(fallDamageGrowth, excessTime) - 1f);
+
+        player.TakeDamage(damageAmount, Vector3.zero, Vector3.zero);
+      //  player.TakeDamageWithImpact(Vector3.zero, DamageType.FALL, Vector3.zero, Quaternion.identity);
+}
+    private void _TrackAirTime()
+    {
+       /* if (!PlayerStatus.Instance.isGrounded)
+        {
+            // only count time spent falling, not rising
+            if (velocity.y < 0f)
+            {
+                airTime += Time.deltaTime;
+            }
+        }
+        else
+        {
+            if (airTime > 0f)
+            {
+                TakeFallDamage(airTime);
+            }
+            airTime = 0f;
+        }*/
+    }
     public override void FrameUpdate()
     {
+
         if (!allowMovement)
         {
             return;
         }
-        if(isWalking)
+        _TrackAirTime();
+        if (isWalking)
         {
             deltaStepInterval += Time.deltaTime;
-            if (deltaStepInterval >= footstepInterval)
+            if (deltaStepInterval >= footstepInterval && PlayerStatus.Instance.isGrounded)
             {
                 deltaStepInterval = 0;
-                SoundFXManager.instance.PlaySoundFXClip(footstepSound, player.transform, 1, SoundType.SOUNDFX);
+                SoundFXManager.instance.PlaySoundFXClip(footstepSound, player.transform, .6f, SoundType.SOUNDFX);
             }
         }
-        
+
         jumpDir = Vector3.up;
-        if (PlayerStatus.Instance.isGrounded)
+        if (PlayerStatus.Instance.isGrounded && !PlayerStatus.Instance.isJumping)
         {
             if (momentumCoroutine == null)
             {
@@ -153,14 +194,16 @@ public class LocoPlayerWalkingState : PlayerState
             jumpCounter = PlayerStatus.Instance.maxJumps;
             hasTouchedGroundAfterTouchingWall = true;
         }
-        
+
         if (PlayerStatus.Instance.isWithinWall)
         {
-            jumpCounter = PlayerStatus.Instance.maxJumps;
-            jumpDir = (jumpDir + PlayerStatus.Instance.wallNormal).normalized;
+            //jumpCounter = PlayerStatus.Instance.maxJumps;
+            //jumpDir = (jumpDir + PlayerStatus.Instance.wallNormal).normalized;
         }
         _DebuggingPurpose();
-       // Debug.Log(deltaGravityAmount);
+        if (_Climb()) 
+            return;
+        // Debug.Log(deltaGravityAmount);
         _Move();
         _Gravity();
         _Jump();
@@ -172,7 +215,7 @@ public class LocoPlayerWalkingState : PlayerState
         grappleLine.SetPosition(1, grappleStart.position + directionNormalized * deltaGrapplePos);
         // Debug.Log(velocity.magnitude);
     }
-    
+
     IEnumerator StartFrameCounterBeforeMomentumLoss()
     {
         yield return waitBeforeMomentumLoss;
@@ -214,7 +257,7 @@ public class LocoPlayerWalkingState : PlayerState
         armAnimator.SetLayerWeight(leftArmLayerIndex, 1f);
         armAnimator.SetBool("L_ArmGrappleStart", true);
         isGrappling = true;
-        if(!didHitGrapplePoint)
+        if (!didHitGrapplePoint)
             isInitialGrappleThrow = true;
         Vector3 endPoint;
         if (Physics.Raycast(aimCamera.transform.position, aimCamera.transform.forward, out RaycastHit hit, grappleRange, grappleMask))
@@ -281,7 +324,7 @@ public class LocoPlayerWalkingState : PlayerState
         isInitialGrappleThrow = false;
         deltaGrapplePos = 0f;
         grappleLine.enabled = false; // hide the rope once released — drop this if handled elsewhere
-        if(isPreserveMomentum)
+        if (isPreserveMomentum)
             preserveMomentum = true;//tama yan
         else
             preserveMomentum = false;
@@ -293,7 +336,7 @@ public class LocoPlayerWalkingState : PlayerState
     }
     private void _Move()
     {
-        if(preserveMomentum)
+        if (preserveMomentum)
             return;
         if (playerInputs.moveDirection.magnitude < 0.01f)
         {
@@ -321,7 +364,7 @@ public class LocoPlayerWalkingState : PlayerState
             Vector3 normalizedMoveDir = movementDirectionWithSPeed.normalized;
             Vector3 normalizedVelocity = velocity.normalized;
 
-            Vector3 finalVelocity = normalizedMoveDir*moveInputInfluence + normalizedVelocity;
+            Vector3 finalVelocity = normalizedMoveDir * moveInputInfluence + normalizedVelocity;
             //Debug.Log($"_Move() : Velocity : {normalizedVelocity}, MoveDir : {normalizedMoveDir}, Final: {finalVelocity}, normal : {finalVelocity.normalized}");
             finalVelocity.Normalize();
             velocity = new Vector3(finalVelocity.x, velocity.y, finalVelocity.z) * (velocity.magnitude);
@@ -333,14 +376,14 @@ public class LocoPlayerWalkingState : PlayerState
             velocity.y = velY;
         }
         //_Dash(horizontalVelocity.normalized);
-        Vector3 dashDir = new Vector3 (velocity.x, 0, velocity.z);
+        Vector3 dashDir = new Vector3(velocity.x, 0, velocity.z);
         player.playerDashingState.SetDirection(dashDir.normalized);
     }
-    
+
     private void _Gravity()
     {
         Quaternion slopeOffset = Quaternion.identity;
-        
+
         if (PlayerStatus.Instance.isJumping)
             return;
         if (preserveMomentum)
@@ -351,10 +394,10 @@ public class LocoPlayerWalkingState : PlayerState
             deltaGravityAmount += gravityAcceleration * Time.deltaTime;
         if (isGrappling && !isInitialGrappleThrow)
             deltaGravityAmount /= 5;// if grappling, reduce influence of gravity
-        
-            
+
+
         //Vector3 finalVelocityOffset = slopeOffset *- Vector3.up;
-        velocity.y = - deltaGravityAmount * Time.deltaTime;
+        velocity.y = -deltaGravityAmount * Time.deltaTime;
 
     }
     float initialMomentum;
@@ -364,19 +407,19 @@ public class LocoPlayerWalkingState : PlayerState
         float momentumFactor = 1.0f / (initialMomentum * 90f);
         Debug.Log(momentumFactor);
         //float momentumFactor = .05f;
-        return (deltaGravityAmount + gravityAcceleration * Time.deltaTime)*momentumFactor;
+        return (deltaGravityAmount + gravityAcceleration * Time.deltaTime) * momentumFactor;
     }
     private void _ApplyMovement()
     {
         if (!PlayerStatus.Instance.isGrounded)
         {
-            if(preserveMomentum)
+            if (preserveMomentum)
             {
                 //becomes negative
                 /*if(velocity.magnitude  > 0) change every ve l version
                    velocity = velocity.normalized * (velocity.magnitude - momentumDeceleration*Time.deltaTime);*/
-                if(velocity.magnitude  > 0) //change only y
-                   velocity.y = velocity.y  - momentumDeceleration*Time.deltaTime;
+                if (velocity.magnitude > 0) //change only y
+                    velocity.y = velocity.y - momentumDeceleration * Time.deltaTime;
 
                 if (velocity.magnitude <= initialMomentum * 0.75f)
                 {
@@ -412,7 +455,7 @@ public class LocoPlayerWalkingState : PlayerState
     {
         if (!PlayerStatus.Instance.isJumping)
             return;
-        if(isGrappling)
+        if (isGrappling)
         {
             PlayerStatus.Instance.isJumping = false;
             deltaJumpPosition = 0;
@@ -426,10 +469,10 @@ public class LocoPlayerWalkingState : PlayerState
         //preserveMomentum = true;
 
         deltaGravityAmount = 0;
-        if(PlayerStatus.Instance.isWithinWall || PlayerStatus.Instance.isWallJumping)
+        if (PlayerStatus.Instance.isWithinWall || PlayerStatus.Instance.isWallJumping)
         {
-            WallJump();
-            return;
+            //WallJump();
+            //return;
         }
         float deltaY = initialJumpForce * Time.deltaTime;
         velocity.y = deltaY;
@@ -458,7 +501,7 @@ public class LocoPlayerWalkingState : PlayerState
         PlayerStatus.Instance.isWallJumping = true;
         float deltaY = initialJumpForce * 2 * Time.deltaTime;
         velocity = jumpDir * deltaY;
-        float jumpMomentum_percent = 1 - (deltaJumpPosition / (maxJumpHeight*2));
+        float jumpMomentum_percent = 1 - (deltaJumpPosition / (maxJumpHeight * 2));
         float jumpMomentum = jumpCurve.Evaluate(jumpMomentum_percent);
         if (velocity.magnitude >= minJumpForce || jumpMomentum > 0)
         {
@@ -492,4 +535,60 @@ public class LocoPlayerWalkingState : PlayerState
     {
 
     }
+    #region LADDER
+    public bool isClimbing;
+    private Ladder currentLadder;
+    private float climbSpeed = 3f;
+
+    public void SetLadder(Ladder ladder) => currentLadder = ladder;
+
+    public void ClearLadder(Ladder ladder)
+    {
+        if (currentLadder != ladder) return;
+        currentLadder = null;
+        if (isClimbing)
+            StopClimbing(playerInputs.moveDirection.y > 0);
+    }
+
+    private void StartClimbing()
+    {
+        if (isGrappling) EndGrapple(false);
+        isClimbing = true;
+        preserveMomentum = false;
+        velocity = Vector3.zero;
+        deltaGravityAmount = 0;
+    }
+
+    private void StopClimbing(bool hopForward = false)
+    {
+        isClimbing = false;
+        velocity = Vector3.zero;
+        deltaGravityAmount = 0;
+        if (hopForward)
+            player.characterController.Move(player.transform.forward * 0.6f + Vector3.up * 0.1f);
+    }
+
+    private bool _Climb()
+    {
+        if (currentLadder == null) return false;
+        float input = playerInputs.moveDirection.y;
+
+        if (!isClimbing)
+        {
+            if (input > 0.1f && !PlayerStatus.Instance.isJumping)
+                StartClimbing();
+            else
+                return false;
+        }
+
+        if (PlayerStatus.Instance.isJumping || (input < -0.1f && PlayerStatus.Instance.isGrounded))
+        {
+            StopClimbing();
+            return false;
+        }
+
+        player.characterController.Move(Vector3.up * input * climbSpeed * Time.deltaTime);
+        return true;
+    }
+#endregion
 }

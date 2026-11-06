@@ -7,14 +7,16 @@ public class UI_InputHandler : IUIActions
     Player player;
     InputActions_Player inputActions;
     UIActions uiActions;
+    MenuHandler menuHandler;
 
-    public UI_InputHandler(Player player, InputActions_Player inputActions)
+    public UI_InputHandler(Player player, InputActions_Player inputActions, MenuHandler menuHandler)
     {
         this.inputActions = inputActions;
         uiActions = inputActions.UI;
         uiActions.SetCallbacks(this);
         uiActions.Disable();
         this.player = player;
+        this.menuHandler = menuHandler;
     }
     public void OnPlayer_CloseInventory(InputAction.CallbackContext context)
     {
@@ -80,5 +82,10 @@ public class UI_InputHandler : IUIActions
             uiActions.Enable();
         else
             uiActions.Disable();
+    }
+
+    public void OnClosePause(InputAction.CallbackContext context)
+    {
+        menuHandler.SetPauseVisible(false);
     }
 }

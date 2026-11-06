@@ -54,7 +54,7 @@ public class HitLag : MonoBehaviour
         else if (slowTimer > 0f) Time.timeScale = slowScale;
         else Time.timeScale = prevScale;
 
-        //SetAudioPitch(Time.timeScale);
+        SetAudioPitch(Time.timeScale);
     }
 
     void SetAudioPitch(float pitch)
@@ -67,6 +67,6 @@ public class HitLag : MonoBehaviour
     {
         if (Active) Time.timeScale = prevScale;
         freezeTimer = slowTimer = 0f;
-        //SetAudioPitch(1f);
+        SetAudioPitch(1f);
     }
 }

@@ -1,0 +1,19 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_UI/Menus/menu.uss?fileID=7433441132597879392&amp;guid=7da97ccb9b91879449a77180eb121c3c&amp;type=3#menu"/>
+    <ui:VisualElement name="menu-parent" style="flex-grow: 1; display: flex;">
+        <ui:VisualElement name="dim" style="flex-grow: 1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background-color: rgb(0, 0, 0); opacity: 0.58;"/>
+        <ui:VisualElement name="parent-parent" style="flex-grow: 1; justify-content: center;">
+            <ui:VisualElement name="parent" class="main-color" style="flex-grow: 1; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgb(166, 166, 166); border-right-color: rgb(166, 166, 166); border-top-color: rgb(166, 166, 166); border-bottom-color: rgb(166, 166, 166); background-image: url(&quot;project://database/Assets/_UI/Menus/final%20scifi.png?fileID=2800000&amp;guid=325cabafbc2eae64b94c7bc3a55e8814&amp;type=3#final scifi&quot;); -unity-background-image-tint-color: rgba(14, 14, 14, 0); background-position-x: left 0; -unity-background-scale-mode: scale-and-crop; background-position-y: top 0; background-color: rgba(0, 0, 0, 0); width: auto; max-width: 348px; max-height: 560px; justify-content: flex-start; align-items: stretch; align-self: center; min-width: 348px;">
+                <ui:VisualElement name="top" style="flex-grow: 1; justify-content: center; align-items: center;">
+                    <ui:Label text="Game Paused" name="pause-label" class="font" style="font-size: 51px; width: 290px;"/>
+                    <ui:Slider label="Sensitivity" name="sensitivity-slider" value="1" low-value="0.2" high-value="3" show-input-field="false" class="sens-slider font" style="font-size: 25px;"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="bottom" style="flex-grow: 1; padding-top: 34px;">
+                    <ui:Button text="Continue" name="continue-btn" class="buttons font"/>
+                    <ui:Button text="Restart" name="restart-btn" class="buttons font"/>
+                    <ui:Button text="Quit to Main Menu" name="quit-btn" class="buttons font"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

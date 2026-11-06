@@ -266,3 +266,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Drops
   dropType: 1
   healingAmount: 10
+  sound: {fileID: 8300000, guid: c0d23f9daf0afa7408330c0e68c89b90, type: 3}

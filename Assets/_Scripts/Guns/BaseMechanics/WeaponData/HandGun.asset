@@ -30,11 +30,11 @@ MonoBehaviour:
   bulletSpread: 0
   bulletStartSpread: 0
   pelletsPerShot: 1
-  maxBulletCount: 35
+  maxBulletCount: 20
   reloadTime: 1.6
   projectilePrefab: {fileID: 0}
   projectileSpeed: 60
-  muzzleFlashPrefab: {fileID: 0}
+  muzzleFlashPrefab: {fileID: 6980259576133684760, guid: 1f58a1dea6bbd9347843e4935585e6a2, type: 3}
   impactEffectPrefab: {fileID: 0}
-  fireSound: {fileID: 0}
+  fireSound: {fileID: 8300000, guid: 6f384ebe8482fb740b68c78bd7f16c21, type: 3}
   emptySound: {fileID: 0}

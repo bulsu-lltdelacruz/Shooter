@@ -6,8 +6,6 @@ using static UnityEngine.GraphicsBuffer;
 
 public class BigSwordEnemy : Enemy
 {
-    [SerializeField] private float dashDistance = 5f;
-    [SerializeField] private float dashSpeed = 4f;
     #region combos
     [SerializeField] private ComboSequenceSO combo;
     EnemyComboAttackState comboAttackState;
@@ -19,10 +17,14 @@ public class BigSwordEnemy : Enemy
 
 
     float normalSpeed, normalAcceleration;
+   // [SerializeField] private float dashDistance = 5f;
+    [SerializeField] private float dashSpeed = 60f;
     [SerializeField] private float dashAcceleration = 60f;
+    [SerializeField] private float maxDashTime = 1.5f;
+    private float dashTimer;
 
-// Changed to LayerMask to store the bitmask properly
-private LayerMask playerLayerMask;
+    // Changed to LayerMask to store the bitmask properly
+    private LayerMask playerLayerMask;
     private LayerMask originalExcludeLayers;
     private LayerMask originalIncludeLayers;
     int wallLayer;
@@ -30,7 +32,26 @@ private LayerMask playerLayerMask;
     EnemyStateMachine enemyStateMachine;
     Vector3 currentTarget;
     [SerializeField] UIDocument DEBUG_Document;
-    VisualElement root;
+    VisualElement root; 
+    
+    [SerializeField] private float attackTurnSpeed = 720f; // degrees/sec
+    private bool canTrackTarget;
+
+    public void EnableTracking() => canTrackTarget = true;
+    public void DisableTracking() => canTrackTarget = false;
+
+    private void TrackTarget()
+    {
+        if (!canTrackTarget) return;
+
+        Vector3 dir = currentTarget - transform.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 0.001f) return;
+
+        Quaternion look = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation, look, attackTurnSpeed * Time.deltaTime);
+    }
     private void Start()
     {
         //DEBUG
@@ -56,27 +77,33 @@ private LayerMask playerLayerMask;
     {
         OnEnableBase();
         OnStunEvt += OnStun;
+        OnParryEvt += OnParry;
     }
     private void OnDisable()
     {
         OnDisableeBase();
         OnStunEvt -= OnStun;
+        OnParryEvt -= OnParry;
     }
-
 
     public override void Attack(E_AttackType attackType, Vector3 target)//gets called by the ranged detector
     {//called inside rangedetector, just tries attacking
+        if(IsPatrolling)
+            return;
         currentTarget = target;
         comboAttackState.TryAttacking();
+        //Debug.LogError("FLICKER!!!");
     }
+
     public override void Dash(Vector3 target)
     {
-        if (isAttacking || isDashing) return;
+        if (isAttacking || isDashing || isStunned || !agent.enabled || IsPatrolling) return;
         isDashing = true;
+        dashTimer = 0f;
 
         Vector3 stop = GetStopPoint(target);
         if (NavMesh.SamplePosition(stop, out NavMeshHit hit, 2f, NavMesh.AllAreas))
-            stop = hit.position;                 // snap the point onto the navmesh
+            stop = hit.position;
 
         currentFinalDashTarget = stop;
         agent.speed = dashSpeed;
@@ -97,7 +124,7 @@ private LayerMask playerLayerMask;
         dir.y = 0f;
 
         if (dir.sqrMagnitude <= stopDistance * stopDistance)
-            return transform.position;   // already close enough
+            return transform.position;
 
         return target - dir.normalized * stopDistance;
     }
@@ -111,6 +138,8 @@ private LayerMask playerLayerMask;
         animator.SetBool("IsRunning", false);
         animator.SetBool("IsIdle", false);
         FaceDirection(currentTarget);
+        agent.updateRotation = false;   // stop the agent from fighting our rotation
+        canTrackTarget = true;
     }
    // public override void Attack()
     //{//called inside coomboattackStat4e actually attacks
@@ -138,6 +167,8 @@ private LayerMask playerLayerMask;
 
         controller.excludeLayers = originalExcludeLayers;
         controller.includeLayers = originalIncludeLayers;
+        canTrackTarget = false;
+        agent.updateRotation = true;
         ResetState();
     }
     public void ResetState()
@@ -154,32 +185,37 @@ private LayerMask playerLayerMask;
         //controller.Move(currentDashDirection * dashSpeed * deltaTime);
         transform.position = Vector3.MoveTowards(transform.position, currentFinalDashTarget, dashSpeed*Time.deltaTime);
         deltaDistance += dashSpeed * deltaTime;
-        if (deltaDistance >= dashDistance)
+      /*  if (deltaDistance >= dashDistance)
         {
             StartAttacking();
 
-            // attackCollider.SetActive(true);
             controller.excludeLayers = originalExcludeLayers | playerLayerMask;
 
             animator.SetBool("IsRunning", false);
             animator.SetBool("IsIdle", false);
             FaceDirection(currentTarget);
-            /*currentDashDirection = target - transform.position;
-            currentDashDirection.Normalize();
-            currentDashDirection.y = 0;
-            Vector3 faceDirection = new Vector3(currentDashDirection.x, 0, currentDashDirection.z);
-            transform.rotation = Quaternion.LookRotation(faceDirection);*/
-        }
+        }*/
     }
 
     private void Update()
     {
         root.Q<Label>("label-1").text = "Attack  : " + isAttacking;
         root.Q<Label>("label-2").text = "Combo   : " + comboAttackState.currentComboNameForDebugging;
-        root.Q<Label>("label-3").text = "DASHING: " + isDashing;
+        root.Q<Label>("label-3").text = "Parried : " + isParried;
+        if(IsPatrolling)
+        {
+            base.UpdatePatrol();
+            return;
+        }
         if (isStunned)
         {
             CountDownStun();
+            return;
+        }
+        if(isParried)
+        {
+            Debug.Log("parry me ass");
+            CountDownParried();
             return;
         }
         if (isInParryWindow)
@@ -190,17 +226,16 @@ private LayerMask playerLayerMask;
         if (isAttacking)
         {
             //UpdateAttack();
+            TrackTarget();
             return;
         }
         if (isDashing)
         {
-            Debug.Log("DASHING");
-            transform.position = Vector3.MoveTowards(transform.position, currentFinalDashTarget, dashSpeed * Time.deltaTime);
-            if ((currentFinalDashTarget - transform.position).sqrMagnitude <= 0.0001f)
-            {
+            dashTimer += Time.deltaTime;
+            bool arrived = !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.1f;
+            if (arrived || dashTimer >= maxDashTime)
                 EndDash();
-                agent.enabled = true;
-            }
+            return;   // don't let FrameUpdate2 overwrite the dash destination
         }
         base.FrameUpdate2();
         // Debug.Log(isInAttackDelay);
@@ -209,6 +244,13 @@ private LayerMask playerLayerMask;
     }
     /*EVENTS*/
     private void OnStun()
+    {
+        EndDash();
+        animator.SetBool("IsAttacking", false);
+        animator.SetBool("IsRunning", false);
+        animator.SetBool("IsIdle", false);
+    }
+    public void OnParry()
     {
         EndDash();
         animator.SetBool("IsAttacking", false);

@@ -4,9 +4,13 @@ using static Unity.VisualScripting.Member;
 
 public class Entity : MonoBehaviour, IDamageable
 {
+    [Header("prefabs")]
+    public GameObject parryPrefabs;
     [Header("Base Stats")]
     [SerializeField] protected float maxHP;
     [SerializeField] protected float maxPoise;
+    [SerializeField][Tooltip("Poise Resistance Outside Parry")] protected float poiseRes;
+    [SerializeField][Tooltip("Damage Resistance Outside Parry and Stun")] protected float damageRes;
     protected float currentPoise;
     protected float currentHP;
     [SerializeField] private float weight;
@@ -18,9 +22,16 @@ public class Entity : MonoBehaviour, IDamageable
     protected float totalPoiseDamage;
     //Events
     protected Action OnStunEvt;
+    protected Action OnParryEvt;
+    public bool isStunned;
+    public bool isParried;
+
+    // Inside Entity.cs:
+    // Change from explicit to a standard public virtual property
+    public virtual EffectController effectController { get; protected set; } = new();
+
     public virtual void TakeDamage(float amount, Vector3 hitPoint, Vector3 hitNormal)
     {
-        Debug.Log("Damaged with ");
     }
     public virtual void TakeDamageWithImpact(float damageAmount, float impactAmount, Vector3 source, DamageType damageType)
     {//DONT USER< FOR IMPACT JUST USE ADD IMPOACT THEN CALL THE METHOD BELOW
@@ -31,11 +42,10 @@ public class Entity : MonoBehaviour, IDamageable
         direction.y = 0;
         AddForce(direction, impactAmount);
     }
-    public virtual void TakeDamageWithImpact(Vector3 source, DamageType damageType)
+    public virtual void TakeDamageWithImpact(Vector3 source, DamageType damageType, Vector3 hitPoint, Quaternion hitRotation)
     {
-        currentPoise = Mathf.Max(0, currentPoise - totalPoiseDamage);
-        currentHP = Mathf.Max(0, currentHP - totalPelletDamage);
-        if (currentPoise <= 0)
+        
+        if (currentPoise <= 0 && !damageType.Equals(DamageType.MELEE) && !isStunned)
         {
             HitLag.Instance.SlowMo(.5f,.5f);
             Debug.Log("Stun");
@@ -55,8 +65,8 @@ public class Entity : MonoBehaviour, IDamageable
     }
     public virtual void AddForce(Vector3 direction, float forceAmount)
     {
-        this.forceDir = direction.normalized;
-        this.forceAmount = forceAmount;
+       // this.forceDir = direction.normalized;
+        //this.forceAmount = forceAmount;
     }
     protected void FrameUpdate()
     {
@@ -117,5 +127,48 @@ public class Entity : MonoBehaviour, IDamageable
     {
         currentHP = Mathf.Clamp(currentHP + healAmount, 0, maxHP);
         Debug.Log($"{currentHP} from {healAmount} amount of healing");
+    }
+
+    public GameObject GetParryPrefab()
+    {
+        return parryPrefabs;
+    }
+
+    public void TakeDamageWithImpact(Vector3 source, DamageType damageType)
+    {
+        
+    }
+    protected float CalculateHealthDamage(float damage, DamageType damageType)
+    {
+        switch(damageType)
+        {
+            case DamageType.HANDGUN:
+                return (isStunned) ? damage: damage*0.7f;
+            case DamageType.SHOTGUN:
+                return (isStunned) ? damage * 2f : damage*0.4f;
+            case DamageType.CROSSGUN:
+                return (isStunned) ? damage* 0.7f: damage;
+            case DamageType.MELEE:
+                return damage;
+            default:
+                return damage;
+        }
+    }
+    protected float CalculatePoiseDamage(float poiseDamage, DamageType damageType)
+    {
+        /*switch (damageType)
+        {
+            case DamageType.HANDGUN:
+                return (isStunned) ? poiseDamage : poiseDamage * 0.7f;
+            case DamageType.SHOTGUN:
+                return (isStunned) ? poiseDamage * 2f : poiseDamage * 0.4f;
+            case DamageType.CROSSGUN:
+                return (isStunned) ? poiseDamage * 0.7f : poiseDamage;
+            case DamageType.MELEE:
+                return poiseDamage;
+            default:
+                return poiseDamage;
+        }*/
+        return poiseDamage;
     }
 }

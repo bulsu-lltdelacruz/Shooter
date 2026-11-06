@@ -308,6 +308,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 7d805363a61eba34ba270ff72c9c49db, type: 2}
   fireOrigin: {fileID: 5236993163957643597}
   icon: {fileID: 3506167780502562645, guid: 1c02df6dba34f74419d2698b8c45458e, type: 3}
+  doesRequireReload: 0
   GUN_idleTrigger: GunIsIdle
   GUN_shootTrigger: GunFire
   GUN_reloadTrigger: GunReload1

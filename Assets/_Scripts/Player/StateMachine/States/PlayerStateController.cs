@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerStateController
@@ -12,6 +13,7 @@ public class PlayerStateController
     PlayerReload2State playerReload2State;
     PlayerMeleeState playerMeleeState;
     PlayerDashMeleeState playerDashMeleeState;
+    PlayerSpellState playerSpellState;
     PlayerChargingAltFireState playerChargingAltFireState;
 
     LocoPlayerWalkingState playerWalkState;
@@ -43,7 +45,7 @@ public class PlayerStateController
         PlayerReloadState playerReloadState, PlayerMeleeState playerMeleeState,
         PlayerReload2State playerReload2State, LocoPlayerWalkingState playerWalkState,
         LocoPlayerDashingState playerDashState, LocoPlayerSlammingState playerSlamState,
-        LocoPlayerGrappleState playerGrappleState)
+        LocoPlayerGrappleState playerGrappleState, PlayerSpellState playerSpellState)
     {
         this.playerStateMachine = playerStateMachine;
         this.locomotionStateMachine = locomotionStateMachine;
@@ -54,6 +56,7 @@ public class PlayerStateController
         this.playerReload2State = playerReload2State;
         this.playerMeleeState = playerMeleeState;
         this.playerDashMeleeState = playerDashMeleeState;
+        this.playerSpellState = playerSpellState;
         this.playerChargingAltFireState = playerChargingAltFireState;
 
         this.playerWalkState = playerWalkState;
@@ -105,8 +108,16 @@ public class PlayerStateController
     public float reloadTime;
     private bool TryShoot()
     {
-        if(playerStateMachine.currentState is PlayerSwitchingState || playerStateMachine.currentState is PlayerReloadState
-            || !player.playerInventory.activeSlot.activeItem.weaponClass.canShoot)
+        if (playerStateMachine.currentState == player.playerChargingAltFireState)
+        {
+            if(PlayerStatus.Instance.spellCharge < PlayerStatus.Instance.maxSpellCharge)
+                return false;
+            playerStateMachine.ChangeState(playerSpellState);
+            PlayerStatus.Instance.UseSpellCharge();
+            return true;
+        }
+        if (playerStateMachine.currentState is PlayerSwitchingState || playerStateMachine.currentState is PlayerReloadState
+            || !player.playerInventory.activeSlot.activeItem.weaponClass.canShoot || playerStateMachine.currentState is PlayerSpellState)
             return false;
         if (playerStateMachine.currentState is PlayerShootingState)
             return true;
@@ -117,7 +128,8 @@ public class PlayerStateController
     {
         if (playerStateMachine.currentState is PlayerChargingAltFireState)
             return true;
-        if (playerStateMachine.currentState is PlayerShootingState || playerStateMachine.currentState is PlayerDashMeleeState)
+        if (playerStateMachine.currentState is PlayerShootingState || playerStateMachine.currentState is PlayerDashMeleeState || playerStateMachine.currentState is PlayerSpellState
+            || playerStateMachine.currentState is PlayerReloadState)
             return false;
         playerStateMachine.ChangeState(playerChargingAltFireState);
         return true;

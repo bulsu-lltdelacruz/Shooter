@@ -17,7 +17,19 @@ public class SoundFXManager : MonoBehaviour
         if (instance == null)
             instance = this;
     }
+    public void PlayForSeconds(AudioClip clip, Vector3 position, float seconds, float volume = 1f)
+    {
+        GameObject go = new GameObject("TempSound");
+        go.transform.position = position;
 
+        AudioSource src = go.AddComponent<AudioSource>();
+        src.clip = clip;
+        src.volume = volume;
+        src.spatialBlend = 1f;
+        src.Play();
+
+        Object.Destroy(go, seconds);
+    }
     public void PlaySoundFXClip(AudioClip audioClip, Transform spawnTransform, float volume, SoundType source)
     {
         if (isQuitting)

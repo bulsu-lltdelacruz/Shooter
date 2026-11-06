@@ -20,8 +20,8 @@ MonoBehaviour:
   fireRate: 0.25
   burstCount: 3
   burstShotDelay: 0.08
-  damagePerPellet: 5.5
-  poiseDamagePerPellet: 5
+  damagePerPellet: 8
+  poiseDamagePerPellet: 0.2
   pushForce: 1
   range: 100
   hitMask:
@@ -30,11 +30,11 @@ MonoBehaviour:
   bulletSpread: 8
   bulletStartSpread: 0.04
   pelletsPerShot: 10
-  maxBulletCount: 20
+  maxBulletCount: 10
   reloadTime: 1.458
   projectilePrefab: {fileID: 0}
   projectileSpeed: 60
-  muzzleFlashPrefab: {fileID: 0}
+  muzzleFlashPrefab: {fileID: 6980259576133684760, guid: 1f58a1dea6bbd9347843e4935585e6a2, type: 3}
   impactEffectPrefab: {fileID: 0}
-  fireSound: {fileID: 0}
+  fireSound: {fileID: 8300000, guid: e2b44bb644cc73943af372cead1593a9, type: 3}
   emptySound: {fileID: 0}

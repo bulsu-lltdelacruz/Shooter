@@ -226,6 +226,15 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OnPause"",
+                    ""type"": ""Button"",
+                    ""id"": ""169937b9-3275-49a5-a0b0-0a4991a49587"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -540,7 +549,7 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""1c04ea5f-b012-41d1-a6f7-02e963b52893"",
-                    ""path"": ""<Keyboard>/p"",
+                    ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
@@ -616,17 +625,6 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a8a10b09-7f54-4650-b18b-977d0902be3a"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Grapple"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""71a65110-314b-4671-98cb-2175605138b4"",
                     ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
@@ -671,45 +669,23 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""9f5b3bad-f7bd-4d1a-a380-7833bec9bc4d"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Throw"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""27b8326b-4336-4307-bd05-7251a6240768"",
-                    ""path"": ""<Keyboard>/f"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Throw"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9c72c6d1-34d6-4d0c-929f-754c89a47793"",
-                    ""path"": ""<Keyboard>/v"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Throw"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""fa0e9ff2-52c7-4597-b27c-4b737c271839"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ChargeAltFire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""13ced78f-2f18-4862-acb8-0e4fc1f08e62"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OnPause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -813,6 +789,15 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
                     ""name"": ""Player_CloseInventory"",
                     ""type"": ""Button"",
                     ""id"": ""e5be0407-8af7-417d-9e59-2eed50fdd137"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ClosePause"",
+                    ""type"": ""Button"",
+                    ""id"": ""30724221-cd84-4e06-9072-5df84a007a0c"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1248,6 +1233,17 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
                     ""action"": ""Player_CloseInventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3733f982-ad13-44bd-b668-257a3b34c2f5"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClosePause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1332,6 +1328,7 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
         m_Player_SwitchWeapon = m_Player.FindAction("SwitchWeapon", throwIfNotFound: true);
         m_Player_Throw = m_Player.FindAction("Throw", throwIfNotFound: true);
         m_Player_ChargeAltFire = m_Player.FindAction("ChargeAltFire", throwIfNotFound: true);
+        m_Player_OnPause = m_Player.FindAction("OnPause", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1345,6 +1342,7 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
         m_UI_Player_CloseInventory = m_UI.FindAction("Player_CloseInventory", throwIfNotFound: true);
+        m_UI_ClosePause = m_UI.FindAction("ClosePause", throwIfNotFound: true);
     }
 
     ~@InputActions_Player()
@@ -1441,6 +1439,7 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SwitchWeapon;
     private readonly InputAction m_Player_Throw;
     private readonly InputAction m_Player_ChargeAltFire;
+    private readonly InputAction m_Player_OnPause;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1513,6 +1512,10 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ChargeAltFire => m_Wrapper.m_Player_ChargeAltFire;
         /// <summary>
+        /// Provides access to the underlying input action "Player/OnPause".
+        /// </summary>
+        public InputAction @OnPause => m_Wrapper.m_Player_OnPause;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1583,6 +1586,9 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
             @ChargeAltFire.started += instance.OnChargeAltFire;
             @ChargeAltFire.performed += instance.OnChargeAltFire;
             @ChargeAltFire.canceled += instance.OnChargeAltFire;
+            @OnPause.started += instance.OnOnPause;
+            @OnPause.performed += instance.OnOnPause;
+            @OnPause.canceled += instance.OnOnPause;
         }
 
         /// <summary>
@@ -1639,6 +1645,9 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
             @ChargeAltFire.started -= instance.OnChargeAltFire;
             @ChargeAltFire.performed -= instance.OnChargeAltFire;
             @ChargeAltFire.canceled -= instance.OnChargeAltFire;
+            @OnPause.started -= instance.OnOnPause;
+            @OnPause.performed -= instance.OnOnPause;
+            @OnPause.canceled -= instance.OnOnPause;
         }
 
         /// <summary>
@@ -1687,6 +1696,7 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_TrackedDevicePosition;
     private readonly InputAction m_UI_TrackedDeviceOrientation;
     private readonly InputAction m_UI_Player_CloseInventory;
+    private readonly InputAction m_UI_ClosePause;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -1742,6 +1752,10 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/Player_CloseInventory".
         /// </summary>
         public InputAction @Player_CloseInventory => m_Wrapper.m_UI_Player_CloseInventory;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/ClosePause".
+        /// </summary>
+        public InputAction @ClosePause => m_Wrapper.m_UI_ClosePause;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1801,6 +1815,9 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
             @Player_CloseInventory.started += instance.OnPlayer_CloseInventory;
             @Player_CloseInventory.performed += instance.OnPlayer_CloseInventory;
             @Player_CloseInventory.canceled += instance.OnPlayer_CloseInventory;
+            @ClosePause.started += instance.OnClosePause;
+            @ClosePause.performed += instance.OnClosePause;
+            @ClosePause.canceled += instance.OnClosePause;
         }
 
         /// <summary>
@@ -1845,6 +1862,9 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
             @Player_CloseInventory.started -= instance.OnPlayer_CloseInventory;
             @Player_CloseInventory.performed -= instance.OnPlayer_CloseInventory;
             @Player_CloseInventory.canceled -= instance.OnPlayer_CloseInventory;
+            @ClosePause.started -= instance.OnClosePause;
+            @ClosePause.performed -= instance.OnClosePause;
+            @ClosePause.canceled -= instance.OnClosePause;
         }
 
         /// <summary>
@@ -2055,6 +2075,13 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnChargeAltFire(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OnPause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOnPause(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -2140,5 +2167,12 @@ public partial class @InputActions_Player: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPlayer_CloseInventory(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClosePause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClosePause(InputAction.CallbackContext context);
     }
 }

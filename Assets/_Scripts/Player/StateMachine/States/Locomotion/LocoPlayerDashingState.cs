@@ -20,10 +20,12 @@ public class LocoPlayerDashingState : PlayerState
     }
     public override void EnterState()
     {
-
+        SoundFXManager.instance.PlaySoundFXClip(PlayerSounds.Instance.dash_sound, player.transform, 1, SoundType.SOUNDFX);
+        player.playerPrefabs.dashPrefab.SetActive(true);
     }
     public override void ExitState()
     {
+        player.playerPrefabs.dashPrefab.SetActive(false);
         deltaDashDistance = 0f;
     }
     public override void FrameUpdate()

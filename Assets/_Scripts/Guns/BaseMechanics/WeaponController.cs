@@ -43,11 +43,16 @@ public class WeaponController : MonoBehaviour
 
     //ewawawa
     Vector2[] spiralPointsCache;
-    int cachedPelletCount = -1; 
+    int cachedPelletCount = -1;
+
+
+    List<HitData> damageable;
     void Awake()
     {
         inventory = GetComponent<PlayerInventory>();
         audioSource = GetComponent<AudioSource>();
+        damageable = new List<HitData>();
+
         damageableLayer = LayerMask.NameToLayer("Damageable");
         projectileLayer = LayerMask.NameToLayer("ProjectileDamageable");
         bulletCountDocument = HUDDoc.rootVisualElement.Q<Label>("bullet-count");
@@ -149,20 +154,21 @@ public class WeaponController : MonoBehaviour
             
         }
     }
-
     void FireShot()
     {
         OnFire?.Invoke();
         DecreaseBulletCount(1);
-        SoundFXManager.instance.PlaySoundFXClip(PlayerSounds.Instance.handgun_fire, transform, 1, SoundType.SOUNDFX);
         if (data.fireSound)
-            audioSource.PlayOneShot(data.fireSound);
+            SoundFXManager.instance.PlaySoundFXClip(data.fireSound, transform, 1, SoundType.SOUNDFX);
+        //audioSource.PlayOneShot(data.fireSound);
         if (data.muzzleFlashPrefab)
-            Instantiate(data.muzzleFlashPrefab, firePoint.position, firePoint.rotation);
+        {
+            ObjectPoolManager.SpawnObject(data.muzzleFlashPrefab, fireOrigin.position, fireOrigin.rotation);
+        }
+            
 
         //int barelCount = fireOrigin.Length;
         int pelletsPerShot = data.pelletsPerShot;
-        IDamageable damageable = null;
 
         for (int i = 0; i < pelletsPerShot; i++)
         {
@@ -172,15 +178,26 @@ public class WeaponController : MonoBehaviour
                 FireProjectile(rawOrigin, direction, false);
             else
             {
-                IDamageable damageableTemp = FireHitscan(rawOrigin, direction, false, i);
-                damageable = (damageableTemp != null) ? damageableTemp : damageable;
+                HitData hitData = FireHitscan(rawOrigin, direction, false, i);
+                if (hitData != null)
+                {
+                    damageable.Add(hitData);
+                }
+                //damageable = (damageableTemp != null) ? damageableTemp : damageable;
             }
                 
         }
-        if(damageable != null)
+        if(damageable.Count > 0)
         {
-            damageable.TakeDamageWithImpact(transform.position, data.damageType);
-        }else
+            foreach (var item in damageable)
+            {
+                Quaternion spawnRotation = Quaternion.LookRotation(-transform.forward);
+                item.damageable.TakeDamageWithImpact(transform.position, data.damageType, item.hitPoint, spawnRotation);
+
+            }
+            damageable.Clear();
+        }
+        else
         {
             
         }
@@ -190,27 +207,46 @@ public class WeaponController : MonoBehaviour
     public void RestoreBullets(float percent)
     {
         List<Slot> allSlots = inventory.GetInventorySlots();
-        Debug.Log(allSlots.Count);
-        foreach(Slot slot in allSlots)
+
+        foreach (Slot slot in allSlots)
         {
-            if(slot.activeItem == null) continue;
-            int maxBullets = slot.activeItem.data.maxBulletCount;
-            int bulletsToBeAdded = (int)(maxBullets * percent);
-            if (slot.activeItem.currentBulletCount + bulletsToBeAdded > maxBullets)
-                bulletsToBeAdded = 0;
-            slot.activeItem.currentBulletCount += bulletsToBeAdded;
-            bulletCountDocument.text = inventory.activeSlot.activeItem.currentBulletCount.ToString();
+            Slot.Item item = slot.activeItem;
+            if (item == null) continue;
+
+            int maxBullets = item.data.maxBulletCount;
+            if (item.currentBulletCount >= maxBullets)
+            {
+                item.bulletProgress = 0f;
+                continue;
+            }
+
+            float multiplier = (item.data.weaponType == WeaponType.CrossGun) ? 0.5f : 1f;
+            multiplier = (item.data.weaponType == WeaponType.Shotgun) ? 0.75f : 1f;
+
+            item.bulletProgress += maxBullets * percent * multiplier;
+            int whole = Mathf.FloorToInt(item.bulletProgress + 0.0001f);
+
+            if (whole > 0)
+            {
+                item.bulletProgress = Mathf.Max(0f, item.bulletProgress - whole);
+                item.currentBulletCount = Mathf.Min(maxBullets, item.currentBulletCount + whole);
+
+                if (item.currentBulletCount >= maxBullets)
+                    item.bulletProgress = 0f;
+            }
         }
 
+        if (inventory.activeSlot != null && inventory.activeSlot.activeItem != null)
+            bulletCountDocument.text = inventory.activeSlot.activeItem.currentBulletCount.ToString();
     }
     public void DecreaseBulletCount(int amount)
     {
         inventory.activeSlot.activeItem.currentBulletCount -= amount;
         bulletCountDocument.text = inventory.activeSlot.activeItem.currentBulletCount.ToString();
     }
-    IDamageable FireHitscan(Vector3 rawOrigin, Vector3 direction, bool isFromOtherSource, int pelletIndex)
+    HitData FireHitscan(Vector3 rawOrigin, Vector3 direction, bool isFromOtherSource, int pelletIndex)
     {
-        IDamageable damageableReturn = null;
+        HitData hitData = null;
         // Vector3 origin = rawOrigin + aimCamera.transform.position;
         Vector3 origin = aimCamera.transform.position;
         if (isFromOtherSource)
@@ -230,7 +266,7 @@ public class WeaponController : MonoBehaviour
                     if (EntityManager.Instance.GetDamageableFromEnemy(hit.collider.gameObject, out IDamageable damageable))
                     {
                         damageable.AddForceAndDamageAmount(data.damagePerPellet, data.pushForce, data.poiseDamagePerPellet);
-                        damageableReturn = damageable;
+                        hitData = new HitData(damageable, hit.point);
                     }
                     
                 }
@@ -240,13 +276,13 @@ public class WeaponController : MonoBehaviour
                     if (EntityManager.Instance.GetDamageableFromProjectile(hit.collider.gameObject, out IDamageable projDamageable))
                     {
                         projDamageable.TakeDamage(0, transform.position, transform.position);
-                        damageableReturn = projDamageable;
+                        hitData = new HitData(projDamageable, hit.point);
                     }
-                    damageableReturn = projDamageable;
                 }
 
-            endPoint = hit.point;
+                endPoint = hit.point;
             }
+
             Vector3 firOriginfrfr = fireOrigin.position+rawOrigin;
             if (isFromOtherSource)
                 firOriginfrfr = rawOrigin;
@@ -256,7 +292,7 @@ public class WeaponController : MonoBehaviour
                  endPoint,
                  ObjectPoolManager.PoolType.ParticleSystems);
         // }
-        return damageableReturn;
+        return hitData;
     }
     
 
@@ -340,4 +376,14 @@ public class WeaponController : MonoBehaviour
         OnReloadComplete?.Invoke();
         OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
     }*/
+}
+class HitData
+{
+    public IDamageable damageable;
+    public Vector3 hitPoint;
+    public HitData(IDamageable damageable, Vector3 hitPoint)
+    {
+        this.damageable = damageable;
+        this.hitPoint = hitPoint;
+    }
 }

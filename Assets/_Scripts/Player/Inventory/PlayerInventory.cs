@@ -109,6 +109,7 @@ public class PlayerInventory : MonoBehaviour
         player.armAnimator.SetBool(activeSlot.activeItem.weaponClass.ARM_idleTrigger, true);
 
         player.playerSwitchingState.SetWeaponSlot(GetIndexFromWeapon(weaponType) + 1);
+        player.playerSwitchingState.equippedSlot = GetIndexFromWeapon(weaponType) + 1;
         player.PlayerStateController.TryChangeState(E_PlayerStates.SWITCH);
     }
 
@@ -218,6 +219,21 @@ public class PlayerInventory : MonoBehaviour
     public void Hide()
     {
         if (inventoryRoot != null) inventoryRoot.style.display = DisplayStyle.None;
+    }
+    public bool CheckSlotExist(int index)
+    {
+        WeaponType typeToEquip = GetWeaponTypeFromIndex(index - 1);
+        if (!inventory.TryGetValue(typeToEquip, out Slot slot) || slot == null)
+        {
+            Debug.LogWarning($"No slot for key {index}");
+            return false;
+        }
+        if (slot.activeItem == null)
+        {
+            Debug.LogWarning($"No Active Weapon to equip for {typeToEquip} slot");
+            return false;
+        }
+        return true;
     }
 }
 
@@ -339,7 +355,8 @@ public class Slot : VisualElement
         public GameObject weaponPrefab;
         public BaseWeaponClass weaponClass;
         public WeaponData data;
-        public int currentBulletCount;
+        public int currentBulletCount; 
+        public float bulletProgress;
         public Item(GameObject weaponPrefab, WeaponData data)
         {
             this.weaponPrefab = weaponPrefab;

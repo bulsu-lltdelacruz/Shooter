@@ -32,6 +32,8 @@ public class DashMeleeImpact : MonoBehaviour
     {
         if((impactMask.value & (1 << other.gameObject.layer)) != 0)
         {
+            if(other.CompareTag("Projectile"))
+                return;
             if(enemiesHit.Contains(other.gameObject))
                 return;
             //other.TryGetComponent<IDamageable>(out IDamageable damageable);
@@ -43,7 +45,8 @@ public class DashMeleeImpact : MonoBehaviour
                 Enemy enemy = other.gameObject.GetComponent<Enemy>();
                 float damageMultiplier = (enemy.isStunned)?1f:.06f;
                 damageable.AddForceAndDamageAmount(damage* damageMultiplier, 7, 0);
-                damageable.TakeDamageWithImpact(transform.position, DamageType.MELEE);
+                damageable.TakeDamageWithImpact(transform.position, DamageType.MELEE, Vector3.zero, Quaternion.identity);
+                SoundFXManager.instance.PlaySoundFXClip(PlayerSounds.Instance.punch, transform, 1, SoundType.SOUNDFX);
             }
             catch(KeyNotFoundException e)
             {

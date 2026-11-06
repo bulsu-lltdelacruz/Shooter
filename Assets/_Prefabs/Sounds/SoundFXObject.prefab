@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5475622518822811576}
   - component: {fileID: 8409040199588655270}
+  - component: {fileID: 5078892661594377786}
+  - component: {fileID: -697630764522055825}
   m_Layer: 0
   m_Name: SoundFXObject
   m_TagString: Untagged
@@ -44,7 +46,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 5328879371615554229, guid: 0b811459022764e4a897f51f83bd301f, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -89,7 +91,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -129,3 +131,48 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!169 &5078892661594377786
+AudioLowPassFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261261661616312827}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_LowpassResonanceQ: 1
+  lowpassLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.22727273
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &-697630764522055825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261261661616312827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03fcb3e99c8d7a4428adc617221e2a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioOcclusion
+  occluders:
+    serializedVersion: 2
+    m_Bits: 263680
+  openCutoff: 22000
+  occludedCutoff: 400
+  occludedVolumeMultiplier: 0.4
+  checkInterval: 0.1
+  smoothing: 20

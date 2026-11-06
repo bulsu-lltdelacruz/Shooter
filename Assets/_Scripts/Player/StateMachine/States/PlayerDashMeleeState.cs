@@ -71,15 +71,39 @@ public class PlayerDashMeleeState : PlayerState
             return;
         }
 
+        if (target == null || targetTransform == null || !target.activeInHierarchy)
+        {
+            player.PlayerStateController.TryChangeState(E_PlayerStates.IDLE);
+            return;
+        }
+
         dashTimer += Time.deltaTime;
 
-        // flat direction: ignore height difference so you don't dive into the floor
-        Vector3 toTarget = targetTransform.position - playerTransform.position;
-        toTarget.y = 0f;
+        // aim at the enemy's body center, not their feet pivot
+        Vector3 targetPos = targetTransform.position;
+        if (target.TryGetComponent<Collider>(out Collider col))
+            targetPos = col.bounds.center;
+
+        // full 3D direction, so looking/dashing down or up works
+        Vector3 toTarget = targetPos - playerTransform.position;
         float distance = toTarget.magnitude;
         float stopDistance = 1.51f;
 
-        if (distance <= stopDistance + arriveTolerance || dashTimer >= maxDashTime)
+        bool arrived = distance <= stopDistance + arriveTolerance;
+        bool timedOut = dashTimer >= maxDashTime;
+
+        if (!arrived && !timedOut)
+        {
+            float step = Mathf.Min(dashSpeed * Time.deltaTime, distance - stopDistance);
+            Vector3 before = playerTransform.position;
+            player.characterController.Move(toTarget.normalized * step);
+
+            // blocked by floor/wall: moved far less than intended, so treat it as arrived instead of hanging
+            if ((playerTransform.position - before).magnitude < step * 0.1f)
+                arrived = true;
+        }
+
+        if (arrived || timedOut)
         {
             GameObject impactPrefab = Prefabs.Instance.GetImpactPrefab();
             exitFlag = true;
@@ -87,12 +111,7 @@ public class PlayerDashMeleeState : PlayerState
             armAnimator.SetTrigger("ArmMelee1");
             ObjectPoolManager.SpawnObject(impactPrefab, playerTransform.position, playerTransform.rotation, ObjectPoolManager.PoolType.GameObjects);
             HitLag.Instance.Freeze(StaticStuff.hitLagTime);
-            return;
         }
-
-        // never step past the stop distance
-        float step = Mathf.Min(dashSpeed * Time.deltaTime, distance - stopDistance);
-        player.characterController.Move(toTarget.normalized * step);
     }
     /*IEnumerator ExitAfterTime()
     {

@@ -40,7 +40,7 @@ public class Menu : MonoBehaviour
     }
     public void OnQuit(ClickEvent evt)
     {
-       UnityEditor.EditorApplication.isPlaying = false;
+      // UnityEditor.EditorApplication.isPlaying = false;
     }
 
 }

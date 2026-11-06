@@ -5,7 +5,8 @@ public class PlayerSwitchingState : PlayerState
     //float baseCooldown = .375f;
     //float deltaTime;
 
-    private int weaponSlot;
+    public int weaponSlotNumber;
+    public int previousWeaponSlotNumber;
     GameObject gunRotateParent;
     Vector3 startPosition;
     Quaternion startRotation;
@@ -17,6 +18,7 @@ public class PlayerSwitchingState : PlayerState
     Vector3 holdPosition;
     Quaternion holdRotation;
     private bool didSwitch = false;
+    public int equippedSlot;
     public PlayerSwitchingState(
         Player player,
         PlayerStateMachine playerStateMachine,
@@ -56,7 +58,8 @@ public class PlayerSwitchingState : PlayerState
             {
                 if(!didSwitch)
                 {
-                    player.playerInventory.TrySwitchWeapon(weaponSlot);
+                    player.playerInventory.TrySwitchWeapon(weaponSlotNumber);
+                    equippedSlot = weaponSlotNumber;
                     didSwitch = true;
                 }
                 startPosition = gunRotateParent.transform.localPosition = holdPosition;
@@ -85,6 +88,9 @@ public class PlayerSwitchingState : PlayerState
     }
     public void SetWeaponSlot(int slot)
     {
-        this.weaponSlot = slot;
+        this.previousWeaponSlotNumber = weaponSlotNumber;
+        this.weaponSlotNumber = slot;
     }
+
+    public bool CheckCanSwitch(int slot) => slot != equippedSlot;
 }

@@ -6,6 +6,13 @@
     min-width: auto;
     min-height: auto;
     width: 164px;
-    height: 10px;
+    height: 15px;
     align-self: center;
+}
+
+.poisebar {
+    position: absolute;
+    width: 164px;
+    height: 10px;
+    justify-content: flex-start;
 }

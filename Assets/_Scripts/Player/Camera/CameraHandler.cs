@@ -28,7 +28,9 @@ public class CameraHandler : MonoBehaviour
     [SerializeField] float rotationStep = 4f;
     [SerializeField] float maxRotationDistance = 5f;
     [SerializeField] float smoothRot = 10f;
-    Vector3 swayEulorRot;
+    Vector3 swayEulorRot; 
+    public const string SensitivityPrefKey = "sensitivityMultiplier";
+    float sensitivityMultiplier = 1f;
 
     internal void SetInstances(InputHandler playerInputs, PlayerStateMachine playerStateMachine)
     {
@@ -44,6 +46,12 @@ public class CameraHandler : MonoBehaviour
         player = GetComponent<Player>();
         gunBasePos = gun.localPosition;
         gunBaseRot = gun.localRotation;
+        sensitivityMultiplier = PlayerPrefs.GetFloat(SensitivityPrefKey, 1f);
+    }
+
+    public void SetSensitivityMultiplier(float multiplier)
+    {
+        sensitivityMultiplier = multiplier;
     }
     private int skipFrames = 2;
     private void Update()
@@ -56,8 +64,9 @@ public class CameraHandler : MonoBehaviour
             skipFrames--;
             lookInput = Vector3.zero; // discard this frame's input entirely
         }
-        horizontal += lookInput.x * sensitivity * Time.deltaTime;
-        vertical -= lookInput.y * sensitivity * Time.deltaTime;
+        horizontal += lookInput.x * sensitivity * sensitivityMultiplier * Time.deltaTime;
+        vertical -= lookInput.y * sensitivity * sensitivityMultiplier * Time.deltaTime;
+
         vertical = Mathf.Clamp(vertical, minPitch, maxPitch);
 
         player.transform.rotation = Quaternion.Euler(0, horizontal, 0);
